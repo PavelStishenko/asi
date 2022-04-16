@@ -11,6 +11,7 @@ build-asi-dftbp:
     - export DFTBP_INCLUDE=${HOME}/opt/dftbp/include
     - make -j $CORES_NUMBER
     - make install
+    - cd tests
     - export ASI_HOME=${CI_PROJECT_DIR}/install
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
     - nm $ASI_HOME/lib/libasidftbp.so
