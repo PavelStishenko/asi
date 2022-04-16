@@ -29,7 +29,7 @@ COMPILE_CMD := mpicxx -c -g -std=c++14 -fPIC -I./include/
 COMPILE_TEST_CMD := $(COMPILE_CMD) -I$(ASI_INCLUDE_DIR)
 COMPILE_AIMS_CMD  := $(COMPILE_TEST_CMD)
 COMPILE_DFTBP_CMD := $(COMPILE_TEST_CMD)
-LINK_AIMS_CMD  := mpicxx -Wl,-copy-dt-needed-entries -L$(AIMS_DIR) $(AIMS_LIB) $(BUILD_PATH)/make_config_aims.o
+LINK_AIMS_CMD  := mpicxx -Wl,-copy-dt-needed-entries -L$(AIMS_DIR) -Wl,-start-group $(AIMS_LIB) $(BUILD_PATH)/make_config_aims.o
 LINK_DFTBP_CMD := mpicxx -Wl,-copy-dt-needed-entries -v -v -L$(DFTBP_LIB_DIR) -L$(ASI_LIB_DIR) -Wl,-start-group $(DFTBP_LIBS) -lasidftbp $(BUILD_PATH)/make_config_dftbp.o
 
 
@@ -54,7 +54,7 @@ $(TEST_OBJECTS): $(BUILD_PATH)/%.o : src/%.cpp $(BUILD_PATH)
 	$(COMPILE_TEST_CMD) $< -o $@
 
 $(AIMS_TESTS): $(BUILD_PATH)/test_%-aims.x : $(BUILD_PATH)/test_%.o $(BUILD_PATH)/make_config_aims.o
-	$(LINK_AIMS_CMD) $< -o $@
+	$(LINK_AIMS_CMD) $< -Wl,-end-group -o $@
 
 $(DFTBP_TESTS): $(BUILD_PATH)/test_%-dftbp.x : $(BUILD_PATH)/test_%.o $(BUILD_PATH)/make_config_dftbp.o
 	$(LINK_DFTBP_CMD) $< -Wl,-end-group -o $@
