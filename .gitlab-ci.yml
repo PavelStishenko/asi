@@ -24,5 +24,5 @@ build-asi-dftbp-tests:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - export ASI_HOME=${CI_PROJECT_DIR}/install
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
-    - make -j $CORES_NUMBER
+    - make -j $CORES_NUMBER dftbp_tests
 
