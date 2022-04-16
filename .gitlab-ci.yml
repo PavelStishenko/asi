@@ -7,7 +7,5 @@ build-asi-dftbp:
   script:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - echo $CORES_NUMBER
-    - yum update -y
-    - yum install -y openmpi openmpi-devel wget bzip2 patch gcc gcc-c++ make
     - make -j $CORES_NUMBER
 
