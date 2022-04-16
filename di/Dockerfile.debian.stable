@@ -1,0 +1,26 @@
+# Comment
+# docker build  -t registry.gitlab.com/pvst/asi/debian-dftbp  -f Dockerfile.debian.stable .
+# docker login registry.gitlab.com/pvst/asi
+# docker push registry.gitlab.com/pvst/asi/debian-dftbp
+FROM debian:stable
+RUN apt-get update -qy
+RUN apt-get install --no-install-recommends -qy apt-utils
+RUN apt-get update -qy # 1
+RUN apt-get install --no-install-recommends -qy g++-9 gfortran-9 libopenblas-dev
+RUN apt-get install --no-install-recommends -qy git cmake make wget patch diffutils libopenmpi-dev openmpi-bin libscalapack-openmpi-dev ca-certificates python3
+RUN git clone https://github.com/PavelStishenko/dftbplus ${HOME}/dftbplus
+RUN cd ${HOME}/dftbplus && git checkout api-dm
+ADD config.cmake.lib.patch /config.cmake.lib.patch
+RUN cd ${HOME}/dftbplus && patch config.cmake < /config.cmake.lib.patch
+
+ENV OMPI_FC=gfortran-9
+ENV OMPI_CXX=g++-9
+ENV OMPI_CC=gcc-9
+
+# to avoid "DSO missing from command line": https://stackoverflow.com/a/55086637
+ENV LDFLAGS="-Wl,--copy-dt-needed-entries"
+
+RUN cd ${HOME}/dftbplus && FC=mpifort FFLAGS="-w" CC=mpicc cmake -DSCALAPACK_LIBRARY=scalapack-openmpi -DLAPACK_LIBRARY=openblas -DCMAKE_INSTALL_PREFIX=${HOME}/opt/dftbp -B _build .
+RUN cd ${HOME}/dftbplus/_build && make -j4 && make install
+
+
