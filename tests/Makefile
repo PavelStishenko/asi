@@ -33,27 +33,30 @@ LINK_AIMS_CMD  := mpicxx -Wl,-copy-dt-needed-entries -L$(AIMS_DIR) $(AIMS_LIB) $
 LINK_DFTBP_CMD := mpicxx -Wl,-copy-dt-needed-entries -L$(DFTBP_LIB_DIR) -L$(ASI_LIB_DIR) $(DFTBP_LIBS) -lasidftbp $(BUILD_PATH)/make_config_dftbp.o
 
 
-all : build_dir $(BUILD_PATH)/make_config_aims.o $(BUILD_PATH)/make_config_dftbp.o $(TEST_OBJECTS) $(AIMS_TESTS) $(DFTBP_TESTS)
+all : $(AIMS_TESTS) $(DFTBP_TESTS)
 	@echo "AIMS_TESTS: ${AIMS_TESTS}"
 	@echo "DFTBP_TESTS: ${DFTBP_TESTS}"
 
-build_dir:
+$(BUILD_PATH) :
 	mkdir -p $(BUILD_PATH)
 
+dftbp_tests : $(DFTBP_TESTS)
 
-$(BUILD_PATH)/make_config_aims.o : src/make_config_aims.cpp include/codespec.hpp
+aims_tests : $(AIMS_TESTS)
+
+$(BUILD_PATH)/make_config_aims.o : $(BUILD_PATH) src/make_config_aims.cpp include/codespec.hpp
 	$(COMPILE_CMD) src/make_config_aims.cpp  -o $(BUILD_PATH)/make_config_aims.o
 
-$(BUILD_PATH)/make_config_dftbp.o : src/make_config_dftbp.cpp include/codespec.hpp
+$(BUILD_PATH)/make_config_dftbp.o : $(BUILD_PATH) src/make_config_dftbp.cpp include/codespec.hpp
 	$(COMPILE_CMD) src/make_config_dftbp.cpp -o $(BUILD_PATH)/make_config_dftbp.o
 
-$(TEST_OBJECTS): $(BUILD_PATH)/%.o : src/%.cpp
+$(TEST_OBJECTS): $(BUILD_PATH)/%.o : src/%.cpp $(BUILD_PATH)
 	$(COMPILE_TEST_CMD) $< -o $@
 
-$(AIMS_TESTS): $(BUILD_PATH)/test_%-aims.x : $(BUILD_PATH)/test_%.o
+$(AIMS_TESTS): $(BUILD_PATH)/test_%-aims.x : $(BUILD_PATH)/test_%.o $(BUILD_PATH)/make_config_aims.o
 	$(LINK_AIMS_CMD) $< -o $@
 
-$(DFTBP_TESTS): $(BUILD_PATH)/test_%-dftbp.x : $(BUILD_PATH)/test_%.o
+$(DFTBP_TESTS): $(BUILD_PATH)/test_%-dftbp.x : $(BUILD_PATH)/test_%.o $(BUILD_PATH)/make_config_dftbp.o
 	$(LINK_DFTBP_CMD) $< -o $@
 	
 clean : 
