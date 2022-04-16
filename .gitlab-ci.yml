@@ -13,7 +13,7 @@ build-asi-dftbp:
   artifacts:
     name: "$CI_JOB_NAME"
     paths:
-      - $INSTALL_PREFIX
+      - install/
 
 build-asi-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
