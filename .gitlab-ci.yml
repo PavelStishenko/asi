@@ -7,15 +7,13 @@ build-asi-dftbp:
   stage: buildlib
   script:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
-    - echo $CORES_NUMBER
-    - export INSTALL_PREFIX=${HOME}/opt/asi
+    - export INSTALL_PREFIX=install
     - make -j $CORES_NUMBER
     - make install
-    - ls -lAhtr /root/opt/asi/include/
   artifacts:
     name: "$CI_JOB_NAME"
     paths:
-      - ${HOME}/opt/
+      - $INSTALL_PREFIX
 
 build-asi-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
@@ -24,6 +22,7 @@ build-asi-dftbp-tests:
     - ls -lAhtr /root/opt/asi/include/
     - cd tests
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
-    - echo $CORES_NUMBER
+    - export ASI_HOME=install/
+    - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
     - make -j $CORES_NUMBER
 
