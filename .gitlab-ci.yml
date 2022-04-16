@@ -2,7 +2,7 @@ stages:
   - buildlib
 
 build-asi-dftbp:
-  image: dftbp-debian-stable
+  image: debian-dftbp
   stage: buildlib
   script:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
