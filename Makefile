@@ -1,4 +1,4 @@
-DFTBP_INCLUDE ?= ${HOME}/opt/dftbp/include
+DFTBP_INCLUDE ?= ${HOME}/opt/dftbp-mpi/include
 INSTALL_PREFIX ?= ${HOME}/opt/asi
 BUILD_PATH ?= ${PWD}/build
 
@@ -17,7 +17,8 @@ clean :
 	rm ${BUILD_PATH}/*.o ${BUILD_PATH}/lib*.so
 
 install : ${BUILD_PATH}/asidftbp.so include/asi.h
-	install -D ${BUILD_PATH}/lib*.so ${INSTALL_PREFIX}/lib
+	install -d ${INSTALL_PREFIX}/lib
 	install -d ${INSTALL_PREFIX}/include
+	cp ${BUILD_PATH}/lib*.so ${INSTALL_PREFIX}/lib
 	cp include/asi.h ${INSTALL_PREFIX}/include
 
