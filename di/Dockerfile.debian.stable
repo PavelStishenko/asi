@@ -7,7 +7,7 @@ RUN apt-get update -qy
 RUN apt-get install --no-install-recommends -qy apt-utils
 RUN apt-get update -qy # 1
 RUN apt-get install --no-install-recommends -qy g++-9 gfortran-9 libopenblas-dev
-RUN apt-get install --no-install-recommends -qy git cmake make wget patch diffutils libopenmpi-dev openmpi-bin libscalapack-openmpi-dev ca-certificates python3
+RUN apt-get install --no-install-recommends -qy git cmake make wget patch diffutils libopenmpi-dev openmpi-bin libscalapack-openmpi-dev ca-certificates python3 libboost-all-dev
 RUN git clone https://github.com/PavelStishenko/dftbplus ${HOME}/dftbplus
 RUN cd ${HOME}/dftbplus && git checkout api-dm
 ADD config.cmake.lib.patch /config.cmake.lib.patch
