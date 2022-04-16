@@ -8,6 +8,7 @@ build-asi-dftbp:
   script:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - export INSTALL_PREFIX=${CI_PROJECT_DIR}/install
+    - export DFTBP_INCLUDE=${HOME}/opt/dftbp/include
     - make -j $CORES_NUMBER
     - make install
   artifacts:
