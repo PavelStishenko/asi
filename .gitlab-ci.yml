@@ -10,11 +10,13 @@ build-asi-dftbp:
     - echo $CORES_NUMBER
     - make -j $CORES_NUMBER
     - make install
+    - ls -lAhtr /root/opt/asi/include/
 
 build-asi-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildtests
   script:
+    - ls -lAhtr /root/opt/asi/include/
     - cd tests
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - echo $CORES_NUMBER
