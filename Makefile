@@ -1,4 +1,4 @@
-DFTBP_INCLUDE ?= ${HOME}/opt/dftbp-mpi/include
+DFTBP_INCLUDE ?= ${HOME}/opt/dftbp/include
 INSTALL_PREFIX ?= ${HOME}/opt/asi
 BUILD_PATH ?= ${PWD}/build
 
