@@ -30,7 +30,7 @@ COMPILE_TEST_CMD := $(COMPILE_CMD) -I$(ASI_INCLUDE_DIR)
 COMPILE_AIMS_CMD  := $(COMPILE_TEST_CMD)
 COMPILE_DFTBP_CMD := $(COMPILE_TEST_CMD)
 LINK_AIMS_CMD  := mpicxx -Wl,-copy-dt-needed-entries -L$(AIMS_DIR) $(AIMS_LIB) $(BUILD_PATH)/make_config_aims.o
-LINK_DFTBP_CMD := mpicxx -Wl,-copy-dt-needed-entries -L$(DFTBP_LIB_DIR) -L$(ASI_LIB_DIR) $(DFTBP_LIBS) -lasidftbp $(BUILD_PATH)/make_config_dftbp.o
+LINK_DFTBP_CMD := mpicxx -Wl,-copy-dt-needed-entries -v -v -L$(DFTBP_LIB_DIR) -L$(ASI_LIB_DIR) $(DFTBP_LIBS) -lasidftbp $(BUILD_PATH)/make_config_dftbp.o
 
 
 all : $(AIMS_TESTS) $(DFTBP_TESTS)
