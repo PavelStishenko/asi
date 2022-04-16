@@ -1,10 +1,20 @@
 stages:
   - buildlib
+  - buildtests
 
 build-asi-dftbp:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildlib
   script:
+    - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
+    - echo $CORES_NUMBER
+    - make -j $CORES_NUMBER
+
+build-asi-dftbp:
+  image: registry.gitlab.com/pvst/asi/debian-dftbp
+  stage: buildtest
+  script:
+    - cd tests
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - echo $CORES_NUMBER
     - make -j $CORES_NUMBER
