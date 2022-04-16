@@ -8,9 +8,14 @@ build-asi-dftbp:
   script:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - echo $CORES_NUMBER
+    - export INSTALL_PREFIX=${HOME}/opt/asi
     - make -j $CORES_NUMBER
     - make install
     - ls -lAhtr /root/opt/asi/include/
+  artifacts:
+    name: "$CI_JOB_NAME"
+    paths:
+      - ${HOME}/opt/
 
 build-asi-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
