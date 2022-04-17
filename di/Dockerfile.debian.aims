@@ -1,0 +1,19 @@
+# Comment
+# docker build  -t registry.gitlab.com/pvst/asi/debian-aims  -f Dockerfile.debian.aims .
+# docker login registry.gitlab.com/pvst/asi
+# docker push registry.gitlab.com/pvst/asi/debian-aims
+FROM debian:stable
+RUN apt-get update -qy
+RUN apt-get install --no-install-recommends -qy apt-utils
+RUN apt-get update -qy # 1
+RUN apt-get install --no-install-recommends -qy g++-9 gfortran-9 libopenblas-dev
+RUN apt-get install --no-install-recommends -qy git cmake make wget patch diffutils libopenmpi-dev openmpi-bin libscalapack-openmpi-dev ca-certificates
+RUN git clone https://token:glpat-XXX@aims-git.rz-berlin.mpg.de/aims/FHIaims ${HOME}/aims
+ADD libaims.gnu.openmpi.openblas.cmake /libaims.gnu.openmpi.openblas.cmake
+ENV OMPI_FC=gfortran-9
+ENV OMPI_CXX=g++-9
+ENV OMPI_CC=gcc-9
+ENV AIMS_HOME=${HOME}/opt/aims
+RUN cd ${HOME}/aims && mkdir build-so && ./ci_scripts/build_aims.sh /libaims.gnu.openmpi.openblas.cmake build-so 4
+
+
