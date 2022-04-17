@@ -13,8 +13,8 @@ ASI_LIB_DIR ?= ${ASI_HOME}/lib/
 ASI_INCLUDE_DIR ?= ${ASI_HOME}/include/
 
 
-AIMS_DIR=${HOME}/prg/aims/build-so-3
-AIMS_LIB=-laims.220309.scalapack.mpi
+AIMS_DIR ?= ${HOME}/prg/aims/build-so-3
+AIMS_LIB ?= -laims.220309.scalapack.mpi
 
 DFTBP_LIB_DIR ?= ${HOME}/opt/dftbp-mpi/lib
 DFTBP_LIBS=-lscalapack-openmpi -ldftbplus -lmudpack -lscalapackfx -lmpifx
