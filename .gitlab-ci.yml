@@ -1,29 +1,37 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-  - buildlib
-  - buildtests
-
+- buildlib
+- buildtests
 build-asi-dftbp:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildlib
   script:
-    - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
-    - export INSTALL_PREFIX=${CI_PROJECT_DIR}/install
-    - export DFTBP_INCLUDE=${HOME}/opt/dftbp/include
-    - make -j $CORES_NUMBER
-    - make install
+  - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S
+    = $NF} END{print S*C}'`
+  - export INSTALL_PREFIX=${CI_PROJECT_DIR}/install
+  - export DFTBP_INCLUDE=${HOME}/opt/dftbp/include
+  - make -j $CORES_NUMBER
+  - make install
   artifacts:
     name: "$CI_JOB_NAME"
     paths:
-      - install/
-
+    - install/
 build-asi-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildtests
   script:
-    - cd tests
-    - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
-    - export ASI_HOME=${CI_PROJECT_DIR}/install
-    - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
-    - nm $ASI_HOME/lib/libasidftbp.so
-    - make -j $CORES_NUMBER dftbp_tests
-
+  - cd tests
+  - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S
+    = $NF} END{print S*C}'`
+  - export ASI_HOME=${CI_PROJECT_DIR}/install
+  - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
+  - nm $ASI_HOME/lib/libasidftbp.so
+  - make -j $CORES_NUMBER dftbp_tests
+include:
+- template: Security/Secret-Detection.gitlab-ci.yml
