@@ -7,6 +7,8 @@ export TESTS="${TESTS:-${PWD}/../build/}"
 
 echo "Tests dir:" $TESTS
 
+env
+
 for t in test_*.aims 
 do
   echo "Run test " $t
