@@ -20,12 +20,17 @@ build-asi-dftbp:
 build-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildtests
+  needs: ["build-asi-dftbp"]
   script:
     - cd tests
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - export ASI_HOME=${CI_PROJECT_DIR}/install
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
     - make -j $CORES_NUMBER dftbp_tests
+  artifacts:
+    name: "$CI_JOB_NAME"
+    paths:
+      - tests/build
 
 build-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
@@ -45,6 +50,7 @@ build-aims-tests:
 run-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: runtests
+  needs: ["build-dftbp-tests"]
   script:
     - cd tests/testcases
     - export OMPI_ALLOW_RUN_AS_ROOT=1
@@ -58,6 +64,7 @@ run-dftbp-tests:
 run-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
   stage: runtests
+  needs: ["build-aims-tests"]
   script:
     - cd tests/testcases
     - export OMPI_ALLOW_RUN_AS_ROOT=1
