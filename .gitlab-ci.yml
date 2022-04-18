@@ -1,6 +1,7 @@
 stages:
   - buildlib
   - buildtests
+  - runtests
 
 build-asi-dftbp:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
@@ -16,7 +17,7 @@ build-asi-dftbp:
     paths:
       - install/
 
-build-asi-dftbp-tests:
+build-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildtests
   script:
@@ -26,7 +27,7 @@ build-asi-dftbp-tests:
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
     - make -j $CORES_NUMBER dftbp_tests
 
-build-asi-aims-tests:
+build-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
   stage: buildtests
   script:
@@ -36,4 +37,16 @@ build-asi-aims-tests:
     - export AIMS_DIR=${HOME}/aims/build-so
     - export AIMS_LIB="-laims"
     - make -j $CORES_NUMBER aims_tests
+  artifacts:
+    name: "$CI_JOB_NAME"
+    paths:
+      - tests/build
+
+run-aims-tests:
+  image: registry.gitlab.com/pvst/asi/debian-aims
+  stage: runtests
+  script:
+    - cd tests/testcases
+    - ./run_aims_tests.sh
+
 
