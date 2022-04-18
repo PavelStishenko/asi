@@ -65,6 +65,17 @@ std::complex<double> univ_conj(std::complex<double> x)
   return std::conj(x);
 }
 
+double kill_negative_zero(double x, double eps)
+{
+    return fabs(x) < eps ? 0.0 : x;
+}
+
+std::complex<double> kill_negative_zero(std::complex<double> x, double eps)
+{
+  double xr = kill_negative_zero(x.real(), eps);
+  double xi = kill_negative_zero(x.imag(), eps);
+  return std::complex<double>(xr, xi);
+}
 
 template <typename T>
 struct expdata_t: public expdata_base_t
@@ -211,19 +222,15 @@ struct expdata_t: public expdata_base_t
       {
         for (int iS = 0; iS < n_spin; ++iS)
         {
-          std::cout << "S*DM " << iK << " " << iS << " "  << SDM_reduced[iK*n_spin + iS] << "  ";
-          std::cout << "H*DM " << iK << " " << iS << " "  << HDM_reduced[iK*n_spin + iS] << std::endl;
+          std::cout << "S*DM " << iK << " " << iS << " "  << kill_negative_zero(SDM_reduced[iK*n_spin + iS], 1e-6) << "  ";
+          std::cout << "H*DM " << iK << " " << iS << " "  << kill_negative_zero(HDM_reduced[iK*n_spin + iS], 1e-6) << std::endl;
         }
       }
-      std::cout << "N_el = "  << std::accumulate(SDM_reduced.begin(), SDM_reduced.end(), T(0.0)) << std::endl;
+      std::cout << "N_el = "  << kill_negative_zero(std::accumulate(SDM_reduced.begin(), SDM_reduced.end(), T(0.0)), 1e-6) << std::endl;
     }
   }// print_all
 };
 
-double kill_negative_zero(double x, double eps)
-{
-    return fabs(x) < eps ? 0.0 : x;
-}
 
 
 int main(int argc, char *argv[])
