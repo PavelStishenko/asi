@@ -2,7 +2,7 @@
 
 ulimit -s unlimited
 
-rm -r work
+rm -rf work
 mkdir work
 cd work
 

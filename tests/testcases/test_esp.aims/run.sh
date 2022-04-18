@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-rm -r work
+rm -rf work
 mkdir work
 cd work
 

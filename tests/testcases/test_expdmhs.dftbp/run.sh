@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm -r work
+rm -rf work
 mkdir work
 cp *.hsd *.skf geo_end.* work/
 cd work
