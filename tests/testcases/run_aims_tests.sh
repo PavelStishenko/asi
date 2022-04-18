@@ -4,6 +4,7 @@ set -e
 ulimit -s unlimited
 
 export TESTS="${TESTS:-${PWD}/../build/}"
+export MPIEXEC="${MPIEXEC:-mpiexec}"
 
 echo "Tests dir:" $TESTS
 

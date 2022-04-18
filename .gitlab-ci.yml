@@ -49,6 +49,7 @@ run-aims-tests:
     - cd tests/testcases
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/aims/build-so/:${HOME}/aims/build-so/subdirectory_aims1/build/
+    - export MPIEXEC="mpiexec --allow-run-as-root "
     - ./run_aims_tests.sh
 
 
