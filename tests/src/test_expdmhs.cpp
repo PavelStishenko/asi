@@ -220,6 +220,11 @@ struct expdata_t: public expdata_base_t
   }// print_all
 };
 
+double kill_negative_zero(double x, double eps)
+{
+    return fabs(x) < eps ? 0.0 : x;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -294,7 +299,7 @@ int main(int argc, char *argv[])
   {
     std::cout << "Forces == ";
     for (size_t i = 0; i < 3 * ASI_n_atoms(); ++i )
-      std::cout << forces[i] << " ";
+      std::cout << kill_negative_zero(forces[i], 1e-6) << " ";
     std::cout << std::endl;
   }
   
