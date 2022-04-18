@@ -1,10 +1,11 @@
 #!/bin/sh
 set -e
 
-export TESTS="${TESTS:-${PWD}/../build/}"
+export TESTS="${TESTS:-${PWD}/../build}"
 export MPIEXEC="${MPIEXEC:-mpiexec}"
 
 echo "Tests dir:" $TESTS
+ls -lAhtr $TESTS
 
 env
 
