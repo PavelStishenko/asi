@@ -31,6 +31,7 @@ build-dftbp-tests:
     name: "$CI_JOB_NAME"
     paths:
       - tests/build
+      - install/
 
 build-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
