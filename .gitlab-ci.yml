@@ -53,7 +53,7 @@ run-dftbp-tests:
     - ls -lA ${CI_PROJECT_DIR}/install/lib || true
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/opt/dftbp/lib:${CI_PROJECT_DIR}/install/lib
     - export MPIEXEC="mpiexec --allow-run-as-root "
-    - ./run_aims_tests.sh
+    - ./run_dftbp_tests.sh
 
 run-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
