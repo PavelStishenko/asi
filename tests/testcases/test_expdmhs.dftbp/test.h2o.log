@@ -1,0 +1,12 @@
+world_size == 1
+ASI_init complete
+n_kpts == 1
+n_spin == 1
+n_basis == 6
+is_real == 1
+n_local_ks == 1
+ASI_run complete
+Energy == -4.077719 Ha = -110.960389 eV
+Forces == 0.000000 -0.000000 -0.007179 0.000000 0.002419 0.003590 -0.000000 -0.002419 0.003590 
+S*DM 0 0 8.000000  H*DM 0 0 -4.167913
+N_el = 8.000000

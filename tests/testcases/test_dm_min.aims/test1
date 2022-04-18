@@ -1,0 +1,9 @@
+ASI_init complete
+n_basis == 44
+dm_init_callback
+dm_callback
+dm_callback
+dm_callback
+dm_callback
+ASI_run complete
+Energy == -76.3866 Ha = -2078.59 eV

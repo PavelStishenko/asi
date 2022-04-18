@@ -1,0 +1,10 @@
+ASI_init complete
+n_kpts == 1
+n_spin == 1
+n_basis == 44
+is_real == 1
+dm_init_callback 1 1 blacs_descr=True
+ASI_run complete
+Energy == -76.472470 Ha = -2080.921785 eV
+Forces == 0.000000 -0.000000 0.001108 0.000000 0.000737 -0.000554 0.000000 -0.000737 -0.000554 
+  End self-consistency iteration #     3       :  max(cpu_time)    wall_clock(cpu1)
