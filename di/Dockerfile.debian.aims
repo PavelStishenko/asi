@@ -15,5 +15,6 @@ ENV OMPI_CXX=g++-9
 ENV OMPI_CC=gcc-9
 ENV AIMS_HOME=${HOME}/opt/aims
 RUN cd ${HOME}/aims && mkdir build-so && ./ci_scripts/build_aims.sh /libaims.gnu.openmpi.openblas.cmake build-so 4
+RUN apt-get install --no-install-recommends -qy ase python3-mpi4py
 
 
