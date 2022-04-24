@@ -63,8 +63,7 @@ class DFT_C_API:
     
       # Load the FHI-aims library
       self.lib = CDLL(self.lib_file, mode=RTLD_LOCAL)
-      print (f"self.lib._handle = {self.lib._handle}")
-      
+
       self.lib.ASI_n_atoms.restype = c_int
       self.lib.ASI_energy.restype = c_double
       self.lib.ASI_forces.restype = POINTER(c_double)
