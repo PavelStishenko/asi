@@ -26,12 +26,13 @@ except ModuleNotFoundError:
     return ground_state_dm
   
 
-os.environ["OMP_NUM_THREADS"]="1"
-os.environ["ASE_AIMS_COMMAND"]=f"mpiexec -n 4 {os.environ['HOME']}/prg/aims/build-exe/aims.220309.scalapack.mpi.x | tee -a aims.total.log.3"
-os.environ["AIMS_SPECIES_DIR"]=f"{os.environ['HOME']}/prg/aims/species_defaults/defaults_2010/tight"
-aims_lib_path = f"{os.environ['HOME']}/prg/aims/build-so-3/libaims.220309.scalapack.mpi.so"
+#os.environ["OMP_NUM_THREADS"]="1"
+#os.environ["ASE_AIMS_COMMAND"]=f"mpiexec -n 4 {os.environ['HOME']}/prg/aims/build-exe/aims.220309.scalapack.mpi.x | tee -a aims.total.log.3"
+#os.environ["AIMS_SPECIES_DIR"]=f"{os.environ['HOME']}/prg/aims/species_defaults/defaults_2010/tight"
+#aims_lib_path = f"{os.environ['HOME']}/prg/aims/build-so-3/libaims.220309.scalapack.mpi.so"
+ASI_LIB_PATH = os.environ['ASI_LIB_PATH']
 
-sl = ScaLAPACK4py(CDLL(aims_lib_path))
+sl = ScaLAPACK4py(CDLL(ASI_LIB_PATH))
 
 def make_aims_calc(iPI=False):
   from ase.calculators.aims import Aims
@@ -136,7 +137,7 @@ atoms = read(sys.argv[1])
 ## Select calculator here:
 ##
 if True:
-  atoms.calc = ASI_ASE_calculator(aims_lib_path, init_aims, None, atoms)
+  atoms.calc = ASI_ASE_calculator(ASI_LIB_PATH, init_aims, None, atoms)
   atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi)
   atoms.calc.asi.scf_cnt = 0
   #atoms.calc.asi.register_dm_callback(dm_calc, atoms.calc.asi)
