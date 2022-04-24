@@ -67,6 +67,7 @@ run-aims-tests:
   stage: runtests
   needs: ["build-aims-tests"]
   script:
+    - export OMPI_MCA_btl_vader_single_copy_mechanism=none # see https://github.com/open-mpi/ompi/issues/4948 and https://git.iws.uni-stuttgart.de/dumux-repositories/dumux/-/issues/894
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/aims/build-so/:${HOME}/aims/build-so/subdirectory_aims1/build/
     - export MPIEXEC="mpiexec --allow-run-as-root "
