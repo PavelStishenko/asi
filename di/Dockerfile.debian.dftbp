@@ -1,5 +1,5 @@
 # Comment
-# docker build  -t registry.gitlab.com/pvst/asi/debian-dftbp  -f Dockerfile.debian.stable .
+# docker build  -t registry.gitlab.com/pvst/asi/debian-dftbp  -f Dockerfile.debian.dftbp .
 # docker login registry.gitlab.com/pvst/asi
 # docker push registry.gitlab.com/pvst/asi/debian-dftbp
 FROM debian:stable
@@ -23,4 +23,5 @@ ENV LDFLAGS="-Wl,--copy-dt-needed-entries"
 RUN cd ${HOME}/dftbplus && FC=mpifort FFLAGS="-w" CC=mpicc cmake -DSCALAPACK_LIBRARY=scalapack-openmpi -DLAPACK_LIBRARY=openblas -DCMAKE_INSTALL_PREFIX=${HOME}/opt/dftbp -B _build .
 RUN cd ${HOME}/dftbplus/_build && make -j4 && make install
 RUN apt-get install --no-install-recommends -qy ase python3-mpi4py
+RUN ${HOME}/dftbplus/utils/get_opt_externals slakos
 

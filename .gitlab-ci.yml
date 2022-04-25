@@ -63,7 +63,6 @@ run-dftbp-tests:
     - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
     - export ASI_LIB_PATH="${CI_PROJECT_DIR}/install/lib/libasidftbp.so"
     - export DFTB_PREFIX="${HOME}/dftbplus/external/slakos/origin/mio-1-1/"
-    - ${HOME}/dftbplus/utils/get_opt_externals slakos
     - cd tests/testcases && ./run_dftbp_tests.sh # TODO use descent test system with codecoverge
   artifacts:
     name: "$CI_JOB_NAME"
