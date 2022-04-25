@@ -6,6 +6,7 @@ ulimit -s unlimited
 export TESTS="${TESTS:-${PWD}/../build/}"
 export MPIEXEC="${MPIEXEC:-mpiexec}"
 export TESTING_PYTHON="${TESTING_PYTHON:-python3}"
+export PYTESTS="${TESTS:-${PWD}/../python/}"
 #export PYTHONPATH=$PYTHONPATH:${PWD}/../../python
 #export DMPREDICT_PATH=${PWD}/../../../dmpredict/
 #export PYTHONPATH=$PYTHONPATH:${DMPREDICT_PATH}
