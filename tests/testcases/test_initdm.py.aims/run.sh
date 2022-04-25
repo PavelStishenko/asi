@@ -2,7 +2,7 @@
 
 set -e
 
-mkdir asi.temp
+mkdir -p asi.temp
 
 $MPIEXEC -n 4 $TESTING_PYTHON -u test_dm_init.py h2o-1.xyz | tee asi.temp/test1.log
 grep -e 'End self' asi.temp/asi.log | wc -l | tee -a asi.temp/test1.log

@@ -147,8 +147,8 @@ else:
   atoms.calc = make_aims_calc()
 
 parprint(f'E = {atoms.get_potential_energy():.6f}')
-np.set_printoptions(precision=6, suppress=True)
-parprint(atoms.get_forces())
+with np.printoptions(formatter={"float_kind":lambda x: f"{(0.0 if abs(x) < 1e-6 else x):.6f}"}):
+  parprint(atoms.get_forces())
 
 dyn = LBFGS(atoms, logfile='asi.temp/dyn.log')
 dyn.attach(lambda :dyn_step(atoms.calc.asi), interval=1)
