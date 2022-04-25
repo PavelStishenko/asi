@@ -61,6 +61,9 @@ run-dftbp-tests:
     - ls -lA ${CI_PROJECT_DIR}/install/lib || true
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/opt/dftbp/lib:${CI_PROJECT_DIR}/install/lib
     - export MPIEXEC="mpiexec --allow-run-as-root "
+    - export PYTHONPATH=$PYTHONPATH:${PWD}/python
+    - export ASI_LIB_PATH="${CI_PROJECT_DIR}/install/lib/libasidftbp.so"
+    - export DFTB_PREFIX="${HOME}/dftbplus/external/slakos/origin/mio-1-1/"
     - ./run_dftbp_tests.sh # TODO use descent test system with codecoverge
 
 run-aims-tests:
