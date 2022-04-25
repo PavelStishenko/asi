@@ -22,5 +22,5 @@ ENV LDFLAGS="-Wl,--copy-dt-needed-entries"
 
 RUN cd ${HOME}/dftbplus && FC=mpifort FFLAGS="-w" CC=mpicc cmake -DSCALAPACK_LIBRARY=scalapack-openmpi -DLAPACK_LIBRARY=openblas -DCMAKE_INSTALL_PREFIX=${HOME}/opt/dftbp -B _build .
 RUN cd ${HOME}/dftbplus/_build && make -j4 && make install
-
+RUN apt-get install --no-install-recommends -qy ase python3-mpi4py
 
