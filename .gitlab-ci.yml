@@ -54,17 +54,16 @@ run-dftbp-tests:
   stage: runtests
   needs: ["build-dftbp-tests"]
   script:
-    - cd tests/testcases
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - ls -lA ${CI_PROJECT_DIR} || true
     - ls -lA ${CI_PROJECT_DIR}/install || true
     - ls -lA ${CI_PROJECT_DIR}/install/lib || true
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/opt/dftbp/lib:${CI_PROJECT_DIR}/install/lib
     - export MPIEXEC="mpiexec --allow-run-as-root "
-    - export PYTHONPATH=$PYTHONPATH:${PWD}/python
+    - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
     - export ASI_LIB_PATH="${CI_PROJECT_DIR}/install/lib/libasidftbp.so"
     - export DFTB_PREFIX="${HOME}/dftbplus/external/slakos/origin/mio-1-1/"
-    - ./run_dftbp_tests.sh # TODO use descent test system with codecoverge
+    - cd tests/testcases && ./run_dftbp_tests.sh # TODO use descent test system with codecoverge
 
 run-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
@@ -75,7 +74,7 @@ run-aims-tests:
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/aims/build-so/:${HOME}/aims/build-so/subdirectory_aims1/build/
     - export MPIEXEC="mpiexec --allow-run-as-root "
-    - export PYTHONPATH=$PYTHONPATH:${PWD}/python
+    - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
     - export ASI_LIB_PATH="${HOME}/aims/build-so/libaims.so"
     - export AIMS_SPECIES_DIR="${HOME}/aims/species_defaults/defaults_2010/tight"
     - cd tests/testcases && ./run_aims_tests.sh
