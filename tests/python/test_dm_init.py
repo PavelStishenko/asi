@@ -102,28 +102,6 @@ def dm_init(aux, iK, iS, descr, data):
     print ("Something happened in dm_init", eee)
 
 
-def dm_calc(aux, iK, iS, descr, data):
-  asi = cast(aux, py_object).value
-  asi.scf_cnt += 1
-  ordprint(f"asi.scf_cnt = {asi.scf_cnt}")
-  try:
-    if descr:
-      descr = sl.wrap_blacs_desc(descr)
-      if descr.is_distributed:
-        parprint("distributed case not implemented")
-        return # TODO distributed case not implemented
-      else:
-        pass
-    else:
-      pass
-    # single process case:
-    #print (f"dm_calc invoked {asi.scf_cnt}")
-    data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
-    np.savetxt(f"dm_{asi.scf_cnt}.txt", data)
-    #print (f"S*D = {np.sum(data * asi.overlap)}")
-  except Exception as eee:
-    print ("Something happened in dm_calc", eee)
-
 def dyn_step(asi):
   atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi) # reset dm_init callback
   fmax = max(np.linalg.norm(atoms.get_forces(), axis=-1))
@@ -139,8 +117,6 @@ atoms = read(sys.argv[1])
 if True:
   atoms.calc = ASI_ASE_calculator(ASI_LIB_PATH, init_aims, None, atoms)
   atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi)
-  atoms.calc.asi.scf_cnt = 0
-  #atoms.calc.asi.register_dm_callback(dm_calc, atoms.calc.asi)
 elif False:
   atoms.calc = make_socket_calc()
 else:

@@ -41,35 +41,6 @@ else:
           Hamiltonian_MaxAngularMomentum_H='"s"')
     calc.write_input(asi.atoms, properties=['forces'])
 
-def dm_init(aux, iK, iS, descr, data):
-  asi = cast(aux, py_object).value
-  try:
-    is_distributed=False
-    if descr:
-      descr = sl.wrap_blacs_desc(descr)
-      if descr.is_distributed:
-        is_distributed = True
-        is_root = (descr.myrow==0 and descr.mycol==0)
-    
-    locshape = (descr.locrow, descr.loccol) if is_distributed else (asi.n_basis,asi.n_basis)
-
-    data = np.ctypeslib.as_array(data, shape=locshape).T
-    
-    #if not is_distributed or is_root: TODO 
-    predicted_dm = predict_dm(asi.atoms)
-    if is_distributed and not is_root:
-      predicted_dm = None
-
-    if is_distributed:
-      sl.scatter(predicted_dm, descr, data)
-    else:
-      data[:, :] = predicted_dm
-
-    #parprint ("dm predict done")
-  except Exception as eee:
-    print ("Something happened in dm_init", eee)
-
-
 def dm_calc(aux, iK, iS, descr, data):
   asi = cast(aux, py_object).value
   asi.scf_cnt += 1
