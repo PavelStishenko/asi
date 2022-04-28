@@ -1,12 +1,3 @@
-
-# for Intel compiler on Hawk
-#AIMS_DIR=/home/c.sacps4/aims/build.so
-#AIMS_LIB=-laims.210513.scalapack.mpi
-#DFTBP_HOME=/home/c.sacps4/dftbp/lib64 
-#DFTBP_LIB_DIR=${DFTBP_HOME}/lib64 
-#LIBS='-lmkl_rt'
-
-
 BUILD_PATH ?= ${PWD}/build
 ASI_HOME ?= ${HOME}/opt/asi
 ASI_LIB_DIR ?= ${ASI_HOME}/lib/

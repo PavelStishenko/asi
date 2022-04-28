@@ -14,5 +14,33 @@ ASI API is specified as a C header file `asi.h`.
 
 ## Building
 
-* FHI-aims has embedded support of ASI API. Just build latest version of FHI-aims as a shared library and use with your code.
-* DFTB+: run `make && make install` from the project root folder. See header of the `Makefile` for environment variables controlling the build process.
+### FHI-aims
+
+FHI-aims has embedded support of ASI API. Just build latest version of FHI-aims as a shared library and use with your code.
+
+
+### DFTB+
+
+1. Download and build DFTB+ from [the branch with ASI API](https://github.com/PavelStishenko/dftbplus/tree/api-dm-3) with shared library support.
+
+2. Set environment variables `DFTBP_INCLUDE` and `DFTBP_LIB_DIR` to folders with DFTB+ C-headers and libraries.
+
+3. Optionally export environment variables `INSTALL_PREFIX` and `BUILD_PATH` to set installation and building locations.
+
+4. Run `make && make install` from the root of the working copy of this repository. 
+
+5. The shared library implementing ASI API for DFTB+ will be in `${INSTALL_PREFIX}/lib`.
+
+## Testing
+
+Use `Makefile` in `tests` folder to build native tests. Set environment variables in the header of `tests/Makefile` to link with proper ASI API implementaions.
+
+To run tests go to `tests/testcases` and run `run_dftbp_tests.sh` or `run_aims_tests.sh` to run test.
+
+## Usage
+
+See `tests/src` for examples of usage in native code.
+
+See `tests/python` for examples of usage in Python scripts.
+
+
