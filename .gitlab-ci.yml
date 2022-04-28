@@ -8,14 +8,26 @@ build-asi-doc:
   stage: buildlib
   script:
     - apt install --no-install-recommends -qy doxygen
-    - cd include && doxygen && cd ..
-    - mkdir public
-    - cp -r include/html/* public/
+    - cd include && doxygen
+  artifacts:
+    name: "$CI_JOB_NAME"
+    when: always
+    paths:
+      - include/html
+
+pages:
+  needs: ["build-asi-doc"]
+  script:
+    - mkdir .public
+    - cp -r ./include/html/* .public
+    - rm -rf public
+    - mv .public public
   artifacts:
     paths:
       - public
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
 
 build-asi-dftbp:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
