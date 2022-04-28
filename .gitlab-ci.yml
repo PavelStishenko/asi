@@ -2,6 +2,7 @@ stages:
   - buildlib
   - buildtests
   - runtests
+  - deploy
 
 build-asi-doc:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
@@ -16,6 +17,7 @@ build-asi-doc:
       - include/html
 
 pages:
+  stage: deploy
   needs: ["build-asi-doc"]
   script:
     - mkdir .public
