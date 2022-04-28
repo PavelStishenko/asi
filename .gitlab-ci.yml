@@ -3,6 +3,18 @@ stages:
   - buildtests
   - runtests
 
+build-asi-doc:
+  image: registry.gitlab.com/pvst/asi/debian-dftbp
+  stage: buildlib
+  script:
+    - apt install --no-install-recommends -qy doxygen
+    - cd include && doxygen
+  artifacts:
+    name: "$CI_JOB_NAME"
+    when: always
+    paths:
+      - include/html
+
 build-asi-dftbp:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildlib
