@@ -81,6 +81,24 @@ def overlap_calc(aux, iK, iS, descr, data):
   except Exception as eee:
     print ("Something happened in dm_calc", eee)
 
+def hamiltonian_calc(aux, iK, iS, descr, data):
+  asi = cast(aux, py_object).value
+  try:
+    if descr:
+      descr = sl.wrap_blacs_desc(descr)
+      if descr.is_distributed:
+        parprint("distributed case not implemented")
+        return # TODO distributed case not implemented
+      else:
+        pass
+    else:
+      pass
+    # single process case:
+    #print (f"dm_calc invoked {asi.scf_cnt}")
+    data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
+    parprint (f"{asi.scf_cnt} H*S = {np.sum(data * asi.overlap):.6f}")
+  except Exception as eee:
+    print ("Something happened in dm_calc", eee)
 
 atoms = molecule('H2O')
 
@@ -88,6 +106,7 @@ atoms.calc = ASI_ASE_calculator(ASI_LIB_PATH, init_via_ase, None, atoms)
 atoms.calc.asi.scf_cnt = 0
 atoms.calc.asi.register_overlap_callback(overlap_calc, atoms.calc.asi)
 atoms.calc.asi.register_dm_callback(dm_calc, atoms.calc.asi)
+atoms.calc.asi.register_hamiltonian_callback(hamiltonian_calc, atoms.calc.asi)
 
 parprint(f'E = {atoms.get_potential_energy():.6f}')
 

@@ -118,6 +118,11 @@ class DFT_C_API:
     self.overlap_aux = overlap_aux
     self.lib.ASI_register_overlap_callback(self.overlap_callback, c_void_p.from_buffer(py_object(self.overlap_aux)))
 
+  def register_hamiltonian_callback(self, hamiltonian_callback, hamiltonian_aux):
+    self.hamiltonian_callback = dmhs_callback(hamiltonian_callback)
+    self.hamiltonian_aux = hamiltonian_aux
+    self.lib.ASI_register_hamiltonian_callback(self.hamiltonian_callback, c_void_p.from_buffer(py_object(self.hamiltonian_aux)))
+
   def register_dm_callback(self, dm_callback, dm_aux):
     self.dm_callback = dmhs_callback(dm_callback)
     self.dm_aux = dm_aux
