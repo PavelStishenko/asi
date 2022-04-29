@@ -9,7 +9,7 @@ from ase import units
 import os, sys
 from time import sleep
 from scipy.spatial import KDTree
-from scipy.interpolate import Rbf as interpolator
+from scipy.interpolate import RBFInterpolator as interpolator
 from mpiprint import parprint, ordprint
 
 @CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double))
@@ -61,7 +61,7 @@ else:
           Hamiltonian_MaxAngularMomentum_H='"s"')
     calc.write_input(asi.atoms, properties=['forces'])
 
-d = 2.75
+d = 4.5
 
 h2o1 = molecule('H2O')
 h2o2 = h2o1.copy()
