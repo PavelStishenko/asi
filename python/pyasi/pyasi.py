@@ -50,7 +50,7 @@ class DFT_C_API:
 
   def __exit__(self, type, value, traceback):
     #Exception handling here
-    print ("__exit__: ", type, value, traceback)
+    #print ("__exit__: ", type, value, traceback)
     self.close()  
 
   def init(self):
@@ -80,7 +80,8 @@ class DFT_C_API:
       
       input_filename = {1:"dummy", 2:"dftb_in.hsd"}[self.lib.ASI_flavour()]
       self.lib.ASI_init(input_filename.encode('UTF-8'), self.logfile.encode('UTF-8'), c_int(self.mpi_comm.py2f()))
-      #self.set_coords() # FIXME
+      if (self.lib.ASI_flavour() == 2):
+        self.set_coords() # FIXME
       return self
     finally:
       os.chdir(curdir)
