@@ -91,11 +91,10 @@ class DFT_C_API:
     try:
       os.chdir(self.work_dir)
       self.lib.ASI_finalize()
-      print(f"ASI_finalize() done")
       handle = self.lib._handle
       del self.lib
       res = libdl.dlclose(handle)
-      print(f"dlclose = {res}")
+      assert res == 0, "dlclose = {res}"
       if self.mpi_comm.Get_rank() == 0:
         os.system(f"cat {self.logfile} >> total.log")
     finally:
