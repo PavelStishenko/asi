@@ -44,7 +44,8 @@ def mix_rdf_potential(pot1, pot2):
 
 
 
-initializer, lib_file, get_pot, mixer = init_dftbp, os.environ['ASI_LIB_PATH'], get_rdf_potential, mix_rdf_potential
+lib_file, get_pot, mixer = os.environ['ASI_LIB_PATH'], get_rdf_potential, mix_rdf_potential
+initializer = init_aims if "aims" in lib_file else init_dftbp
 d = 4.5
 
 h2o1 = molecule('H2O')
