@@ -9,7 +9,7 @@ from ase import units
 import os, sys
 from time import sleep
 from scipy.spatial import KDTree
-from scipy.interpolate import RBFInterpolator as interpolator
+from scipy.interpolate import Rbf as interpolator
 from mpiprint import parprint, ordprint
 
 @CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double))
@@ -45,8 +45,23 @@ def mix_rdf_potential(pot1, pot2):
 
 
 lib_file, get_pot, mixer = os.environ['ASI_LIB_PATH'], get_rdf_potential, mix_rdf_potential
-initializer = init_aims if "aims" in lib_file else init_dftbp
-d = 4.5
+
+if "aims" in lib_file:
+  def initializer(asi):
+    from ase.calculators.aims import Aims
+    calc = Aims(xc='pw-lda')
+    calc.write_input(asi.atoms)
+else:
+  def initializer(asi):
+    from ase.calculators.dftb import Dftb
+    calc = Dftb(label='Some_cluster',
+          Hamiltonian_SCC='Yes',
+          Hamiltonian_MaxAngularMomentum_='',
+          Hamiltonian_MaxAngularMomentum_O='"p"',
+          Hamiltonian_MaxAngularMomentum_H='"s"')
+    calc.write_input(asi.atoms, properties=['forces'])
+
+d = 2.75
 
 h2o1 = molecule('H2O')
 h2o2 = h2o1.copy()

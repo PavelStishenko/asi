@@ -11,23 +11,6 @@ from pathlib import Path
 import os, shutil
 from ase import units
 
-def init_dftbp(asi):
-  from ase.calculators.dftb import Dftb
-  Dftb(label='Some_cluster', slako_dir='/home/mazay/prg/slakos/origin/mio-1-1/',
-        Hamiltonian_SCC='Yes',
-        Hamiltonian_MaxAngularMomentum_='',
-        Hamiltonian_MaxAngularMomentum_O='"p"',
-        Hamiltonian_MaxAngularMomentum_H='"s"').write_input(asi.atoms, properties=['forces'])
-  
-
-def init_aims(asi):
-  from ase.calculators.aims import Aims
-  Aims(xc='pw-lda', 
-    output=['hirshfeld-I'], 
-    sc_accuracy_forces=1e-1, 
-    species_dir='/home/mazay/prg/aims/species_defaults/defaults_2020/light'
-  ).write_input(asi.atoms)
-
 libdl = cdll.LoadLibrary('libdl.so')
 dmhs_callback = CFUNCTYPE(None, c_void_p, c_int, c_int, POINTER(c_int), POINTER(c_double))  # void(*)(void *aux_ptr, int iK, int iS, int *blacs_descr, void *blacs_data)
 
