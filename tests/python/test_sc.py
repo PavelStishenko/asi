@@ -1,7 +1,7 @@
 from mpi4py import MPI
 
 from ctypes import c_double, c_void_p, CFUNCTYPE, cast, py_object, c_int, POINTER
-from pyasi.pyasi import DFT_C_API, init_dftbp, init_aims
+from pyasi.pyasi import DFT_C_API
 import numpy as np
 from numpy.testing import assert_allclose
 from ase.build import molecule
