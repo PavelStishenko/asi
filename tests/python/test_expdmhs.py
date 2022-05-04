@@ -59,6 +59,8 @@ def dm_calc(aux, iK, iS, descr, data):
     data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
     E = atoms.calc.asi.total_energy if asilib.ASI_flavour() == 1 else 0.0 # total_energy calls DM calculation in DFTB+ causing infinite recursion
     parprint (f"{asi.scf_cnt} S*D = {np.sum(data * asi.overlap):.6f} E = {E * units.Hartree:.6f}")
+    if hasattr(asi,"hamiltonian"):
+      parprint (f"{asi.scf_cnt} H*D = {np.sum(data * asi.hamiltonian):.8f}")
   except Exception as eee:
     print ("Something happened in dm_calc", eee)
 
@@ -96,7 +98,7 @@ def hamiltonian_calc(aux, iK, iS, descr, data):
     # single process case:
     #print (f"dm_calc invoked {asi.scf_cnt}")
     data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
-    parprint (f"{asi.scf_cnt} H*S = {np.sum(data * asi.overlap):.6f}")
+    asi.hamiltonian = data.copy()
   except Exception as eee:
     print ("Something happened in dm_calc", eee)
 

@@ -104,8 +104,7 @@ class DFT_C_API:
   def register_hamiltonian_callback(self, hamiltonian_callback, hamiltonian_aux):
     self.hamiltonian_callback = dmhs_callback(hamiltonian_callback)
     self.hamiltonian_aux = hamiltonian_aux
-    if (self.lib.ASI_flavour() == 2): # TODO fix aims export
-      self.lib.ASI_register_hamiltonian_callback(self.hamiltonian_callback, c_void_p.from_buffer(py_object(self.hamiltonian_aux)))
+    self.lib.ASI_register_hamiltonian_callback(self.hamiltonian_callback, c_void_p.from_buffer(py_object(self.hamiltonian_aux)))
 
   def register_dm_callback(self, dm_callback, dm_aux):
     self.dm_callback = dmhs_callback(dm_callback)
