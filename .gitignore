@@ -3,5 +3,6 @@ tests/build
 tests/testcases/*/work
 __pycache__/
 asi.temp/
+asi.temp.*/
 include/latex/
 include/html/
