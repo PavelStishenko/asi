@@ -2,14 +2,18 @@
 
 Atomic Simulation Interface (ASI) is a native C-style API that includes functions for export and import of data structures that are used in electronic structure calculations and for classical molecular dynamics simulations. ASI aims to be a uniform, generic and efficient interface for connecting various computational chemistry and materials science codes in multiscale simulation workflows, such as QM/MM, QM/ML, QM/QM. ASI specifies functions, data types and calling conventions for export and import of density matrices, overlap and Hamiltonian matrices, electrostatic potential, atomic coordinates, charges, total energy and forces. 
 
-ASI API is specified as a C header file `asi.h`.
+## ASI API specification
 
-[ASI API specification](https://pvst.gitlab.io/asi/asi_8h.html).
+ASI API is specified as a C header file [`asi.h`][1]. Codes implementing ASI API must provide linkable library with definitions of functions from [`asi.h`][1]. Depending on particular usage of the implementaions, some functions can be ommited or implemented as stubs, if they are not going to used. To use Python ASI wrapper it is necessary to have all functions from `asi.h` defined, but of course stub definitions can be used.
+
+[**ASI API specification**][1].
+
+[1]: https://pvst.gitlab.io/asi/asi_8h.html
 
 ## Supported in:
 
-* [DFTB+](https://dftbplus.org/): [in separate branch](https://github.com/PavelStishenko/dftbplus/tree/api-dm-3)
-* [FHI-aims](https://fhi-aims.org/): in main branch.
+* [DFTB+](https://dftbplus.org/): [in separate branch](https://github.com/PavelStishenko/dftbplus/tree/api-dm-3). Milestone release: `22.2`.
+* [FHI-aims](https://fhi-aims.org/): in the main branch.
 
 
 ## Building
