@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -e
+ulimit -s unlimited
 
 mkdir -p asi.temp
 

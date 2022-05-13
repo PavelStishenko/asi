@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+ulimit -s unlimited
 
 rm -rf work
 mkdir work
