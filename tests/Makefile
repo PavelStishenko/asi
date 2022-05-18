@@ -16,12 +16,13 @@ TEST_OBJECTS = $(patsubst src/%.cpp,$(BUILD_PATH)/%.o,$(TEST_SOURCES))
 AIMS_TESTS := $(patsubst src/test_%.cpp,$(BUILD_PATH)/test_%-aims.x,$(TEST_SOURCES))
 DFTBP_TESTS := $(patsubst src/test_%.cpp,$(BUILD_PATH)/test_%-dftbp.x, $(filter-out $(wildcard src/*initdm* src/*dm_min*), $(TEST_SOURCES)))
 
-COMPILE_CMD := mpicxx -c -g -std=c++14 -fPIC -I./include/
+CC ?= mpicxx
+COMPILE_CMD := $(CC) -c -g -std=c++14 -fPIC -I./include/ -I$(BOOST_DIR)/include
 COMPILE_TEST_CMD := $(COMPILE_CMD) -I$(ASI_INCLUDE_DIR)
 COMPILE_AIMS_CMD  := $(COMPILE_TEST_CMD)
 COMPILE_DFTBP_CMD := $(COMPILE_TEST_CMD)
-LINK_AIMS_CMD  := mpicxx -Wl,-copy-dt-needed-entries -L$(AIMS_DIR) -Wl,-no-as-needed -Wl,-start-group $(AIMS_LIB) $(BUILD_PATH)/make_config_aims.o
-LINK_DFTBP_CMD := mpicxx -Wl,-copy-dt-needed-entries -L$(DFTBP_LIB_DIR) -L$(ASI_LIB_DIR) -Wl,-start-group $(DFTBP_LIBS) -lasidftbp $(BUILD_PATH)/make_config_dftbp.o
+LINK_AIMS_CMD  := $(CC) -Wl,-copy-dt-needed-entries -L$(AIMS_DIR) -Wl,-no-as-needed -Wl,-start-group $(AIMS_LIB) $(BUILD_PATH)/make_config_aims.o
+LINK_DFTBP_CMD := $(CC) -Wl,-copy-dt-needed-entries -L$(DFTBP_LIB_DIR) -L$(ASI_LIB_DIR) -Wl,-start-group $(DFTBP_LIBS) -lasidftbp $(BUILD_PATH)/make_config_dftbp.o
 
 
 all : $(AIMS_TESTS) $(DFTBP_TESTS)
