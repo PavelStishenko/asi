@@ -39,6 +39,7 @@ build-asi-dftbp:
     - export INSTALL_PREFIX=${CI_PROJECT_DIR}/install
     - export DFTBP_INCLUDE=${HOME}/opt/dftbp/include
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
+    - env
     - make -j $CORES_NUMBER
     - make install
   artifacts:
@@ -55,6 +56,8 @@ build-dftbp-tests:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - export ASI_HOME=${CI_PROJECT_DIR}/install
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
+    - export CC=mpicxx
+    - env
     - make -j $CORES_NUMBER dftbp_tests
   artifacts:
     name: "$CI_JOB_NAME"
@@ -71,6 +74,8 @@ build-aims-tests:
     - export ASI_HOME=${CI_PROJECT_DIR}/install
     - export AIMS_DIR=${HOME}/aims/build-so
     - export AIMS_LIB="-laims"
+    - export CC=mpicxx
+    - env
     - make -j $CORES_NUMBER aims_tests
   artifacts:
     name: "$CI_JOB_NAME"
@@ -91,6 +96,7 @@ run-dftbp-tests:
     - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
     - export ASI_LIB_PATH="${CI_PROJECT_DIR}/install/lib/libasidftbp.so"
     - export DFTB_PREFIX="${HOME}/dftbplus/external/slakos/origin/mio-1-1/"
+    - env
     - apt install --no-install-recommends -qy python3-pip
     - pip install scipy==1.8
     - cd tests/testcases && ./run_tests.sh test_*.dftbp # TODO use descent test system with codecoverge
@@ -112,6 +118,7 @@ run-aims-tests:
     - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
     - export ASI_LIB_PATH="${HOME}/aims/build-so/libaims.so"
     - export AIMS_SPECIES_DIR="${HOME}/aims/species_defaults/defaults_2010/tight"
+    - env
     - apt install --no-install-recommends -qy python3-pip
     - pip install scipy==1.8
     - cd tests/testcases && ./run_tests.sh test_*.aims
