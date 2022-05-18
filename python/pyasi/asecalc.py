@@ -1,6 +1,5 @@
 from ase.calculators.calculator import Calculator, all_changes
 from .pyasi import DFT_C_API
-from ase.parallel import parprint
 from ase import units
 
 """
