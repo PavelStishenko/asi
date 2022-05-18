@@ -15,7 +15,7 @@ cwd = os.getcwd()
 
 
 try:
-  import dmpredict
+  import dmpredictXXX # provoke
   def predict_water_dm(mol):
     dmpredict_path = os.environ.get("DMPREDICT_PATH", cwd)
     return dmpredict.predict(dmpredict_path, mol, )
