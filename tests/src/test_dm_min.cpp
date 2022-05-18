@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstdint>
 #include <ctime>
+#include <cstring>
 
 #include "asi.h"
 
