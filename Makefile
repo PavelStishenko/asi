@@ -8,7 +8,7 @@ all : build_dir ${BUILD_PATH}/libasidftbp.so
 build_dir:
 	mkdir -p $(BUILD_PATH)
 
-${BUILD_PATH}/asidftbp.o : src/dftbp/asi.cpp include/*.h
+${BUILD_PATH}/asidftbp.o : src/dftbp/asi.cpp include/*.h build_dir
 	mpicxx -c -std=c++11 -fPIC -I./include -I${DFTBP_INCLUDE}  src/dftbp/asi.cpp -o ${BUILD_PATH}/asidftbp.o
 
 ${BUILD_PATH}/libasidftbp.so : ${BUILD_PATH}/asidftbp.o
