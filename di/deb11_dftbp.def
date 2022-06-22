@@ -37,3 +37,7 @@ From: deb11_ve.sif
 
 %labels
     Author pvst
+
+%help
+    Launch from Slurm batch script with the following command:
+    srun --mpi=pmix --hint=nomultithread --distribution=block:block singularity exec --env OPAL_PREFIX="/usr/" --env PMIX_INSTALL_PREFIX="/usr/lib/x86_64-linux-gnu/pmix/"  ${HOME}/sing/deb11_dftbp.sif bash sing_script.sh $@
