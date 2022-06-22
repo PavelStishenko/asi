@@ -1,0 +1,39 @@
+BootStrap: localimage
+From: deb11_ve.sif
+
+%files
+    mpi.config.cmake /
+
+%post
+    export DFTBP_INCLUDE=/dftbp-mpi/include
+    export DFTBP_LIB_DIR=/dftbp-mpi/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/dftbp-mpi/lib
+    
+    echo $DFTBP_INCLUDE
+
+    git clone https://github.com/PavelStishenko/dftbplus.git /dftbplus
+    cd /dftbplus
+    git checkout -t origin/api-dm-3
+    cp /mpi.config.cmake /dftbplus/
+    ./utils/get_opt_externals slakos
+    LDFLAGS="-Wl,--copy-dt-needed-entries" FC=mpifort CC=mpicc FFLAGS="-w" cmake  -DLAPACK_LIBRARY=openblas -DSCALAPACK_LIBRARY=scalapack-openmpi -DCMAKE_INSTALL_PREFIX=/dftbp-mpi  -B _build-mpi -C /mpi.config.cmake .
+    cmake --build _build-mpi -- -j
+    cd _build-mpi
+    OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 ctest -R 'api_*' # || true
+    cd ..
+    cmake --install _build-mpi
+    cd ..
+    rm -rf /dftbplus
+
+    git clone https://gitlab.com/pvst/asi.git /asi
+    cd  /asi
+    INSTALL_PREFIX=/dftbp-mpi make install
+
+%environment
+    export DFTBP_INCLUDE=/dftbp-mpi/include
+    export DFTBP_LIB_DIR=/dftbp-mpi/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/dftbp-mpi/lib
+    export PYTHONPATH=$PYTHONPATH:/asi/python
+
+%labels
+    Author pvst

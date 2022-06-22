@@ -1,0 +1,24 @@
+BootStrap: localimage
+From: deb11_clean.sif
+
+
+%post
+    
+    python3 -m venv /ve
+    /ve/bin/pip install --upgrade pip
+    /ve/bin/pip install --no-cache-dir numpy --no-binary numpy
+    /ve/bin/pip install --no-cache-dir mpi4py --no-binary mpi4py
+    /ve/bin/pip install scipy
+    /ve/bin/pip install ase
+    
+    /ve/bin/pip cache purge
+
+%environment
+    export LC_ALL=C
+    export PATH=/usr/games:$PATH
+
+%runscript
+    env
+
+%labels
+    Author pvst
