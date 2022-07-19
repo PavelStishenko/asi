@@ -81,7 +81,7 @@ build-dftbp-tests:
 build-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
   stage: buildtests
-  needs: []
+  needs: ["build-asi-dftbp"] # for asi.h installation
   script:
     - cd tests
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
