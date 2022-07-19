@@ -3,16 +3,14 @@ DFTBP_LIB_DIR ?= ${HOME}/opt/dftbp-mpi/lib
 INSTALL_PREFIX ?= ${HOME}/opt/asi
 BUILD_PATH ?= ${PWD}/build
 
-all : build_dir ${BUILD_PATH}/libasidftbp.so
+all : ${BUILD_PATH}/libasidftbp.so 
 
-build_dir:
+${BUILD_PATH}/asidftbp.o : src/dftbp/asi.cpp include/*.h
 	mkdir -p $(BUILD_PATH)
-
-${BUILD_PATH}/asidftbp.o : src/dftbp/asi.cpp include/*.h build_dir
 	mpicxx -c -std=c++11 -fPIC -I./include -I${DFTBP_INCLUDE}  src/dftbp/asi.cpp -o ${BUILD_PATH}/asidftbp.o
 
 ${BUILD_PATH}/libasidftbp.so : ${BUILD_PATH}/asidftbp.o
-	mpicxx -shared -Wl,--no-undefined -L${DFTBP_LIB_DIR} -Wl,-start-group -ldftbplus ${BUILD_PATH}/asidftbp.o  -Wl,-end-group -o ${BUILD_PATH}/libasidftbp.so 
+	mpicxx -shared -Wl,--no-undefined -L${DFTBP_LIB_DIR} -Wl,-start-group -ldftbplus ${BUILD_PATH}/asidftbp.o  -Wl,-end-group -o ${BUILD_PATH}/libasidftbp.so
 
 clean : 
 	rm ${BUILD_PATH}/*.o ${BUILD_PATH}/lib*.so

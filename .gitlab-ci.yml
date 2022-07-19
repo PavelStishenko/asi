@@ -30,6 +30,19 @@ pages:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
+build-pyasi:
+  image: registry.gitlab.com/pvst/asi/debian-dftbp
+  stage: buildlib
+  script:
+    - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
+    - export INSTALL_PREFIX=${CI_PROJECT_DIR}/install
+    - apt install --no-install-recommends -qy python3-pip
+    - pip install build
+    - ./build_pyasi.sh
+  artifacts:
+    name: "$CI_JOB_NAME"
+    paths:
+      - pyasi/dist/
 
 build-asi-dftbp:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
@@ -85,7 +98,7 @@ build-aims-tests:
 run-dftbp-tests:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: runtests
-  needs: ["build-dftbp-tests"]
+  needs: ["build-dftbp-tests", "build-pyasi"]
   script:
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - ls -lA ${CI_PROJECT_DIR} || true
@@ -93,12 +106,13 @@ run-dftbp-tests:
     - ls -lA ${CI_PROJECT_DIR}/install/lib || true
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/opt/dftbp/lib:${CI_PROJECT_DIR}/install/lib
     - export MPIEXEC="mpiexec --allow-run-as-root "
-    - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
+    - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python_utils
     - export ASI_LIB_PATH="${CI_PROJECT_DIR}/install/lib/libasidftbp.so"
     - export DFTB_PREFIX="${HOME}/dftbplus/external/slakos/origin/mio-1-1/"
     - env
     - apt install --no-install-recommends -qy python3-pip
     - pip install scipy==1.8
+    - pip install pyasi/dist/pyasi-*.whl
     - cd tests/testcases && ./run_tests.sh test_*.dftbp # TODO use descent test system with codecoverge
   artifacts:
     name: "$CI_JOB_NAME"
@@ -109,18 +123,19 @@ run-dftbp-tests:
 run-aims-tests:
   image: registry.gitlab.com/pvst/asi/debian-aims
   stage: runtests
-  needs: ["build-aims-tests"]
+  needs: ["build-aims-tests", "build-pyasi"]
   script:
     - export OMPI_MCA_btl_vader_single_copy_mechanism=none # see https://github.com/open-mpi/ompi/issues/4948 and https://git.iws.uni-stuttgart.de/dumux-repositories/dumux/-/issues/894
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/aims/build-so/:${HOME}/aims/build-so/subdirectory_aims1/build/
     - export MPIEXEC="mpiexec --allow-run-as-root "
-    - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python
+    - export PYTHONPATH=$PYTHONPATH:${CI_PROJECT_DIR}/python_utils
     - export ASI_LIB_PATH="${HOME}/aims/build-so/libaims.so"
     - export AIMS_SPECIES_DIR="${HOME}/aims/species_defaults/defaults_2010/tight"
     - env
     - apt install --no-install-recommends -qy python3-pip
     - pip install scipy==1.8
+    - pip install pyasi/dist/pyasi-*.whl
     - cd tests/testcases && ./run_tests.sh test_*.aims
   artifacts:
     name: "$CI_JOB_NAME"

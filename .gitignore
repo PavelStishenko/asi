@@ -6,3 +6,6 @@ asi.temp/
 asi.temp.*/
 include/latex/
 include/html/
+pyasi/dist/
+pyasi/src/*.egg-info/
+
