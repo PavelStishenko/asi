@@ -110,7 +110,7 @@ run-dftbp-tests:
     - export ASI_LIB_PATH="${CI_PROJECT_DIR}/install/lib/libasidftbp.so"
     - export DFTB_PREFIX="${HOME}/dftbplus/external/slakos/origin/mio-1-1/"
     - env
-    - apt install --no-install-recommends -qy python3-pip
+    - apt install --no-install-recommends -qy python3-pip python3-venv
     - pip install scipy==1.8
     - pip install pyasi/dist/pyasi-*.whl
     - cd tests/testcases && ./run_tests.sh test_*.dftbp # TODO use descent test system with codecoverge
@@ -133,7 +133,7 @@ run-aims-tests:
     - export ASI_LIB_PATH="${HOME}/aims/build-so/libaims.so"
     - export AIMS_SPECIES_DIR="${HOME}/aims/species_defaults/defaults_2010/tight"
     - env
-    - apt install --no-install-recommends -qy python3-pip
+    - apt install --no-install-recommends -qy python3-pip python3-venv
     - pip install scipy==1.8
     - pip install pyasi/dist/pyasi-*.whl
     - cd tests/testcases && ./run_tests.sh test_*.aims
