@@ -1,4 +1,4 @@
-from ctypes import cdll, CDLL, RTLD_LOCAL
+from ctypes import cdll, CDLL, RTLD_GLOBAL
 from ctypes import POINTER, byref, c_int, c_int64, c_bool, c_char_p, c_double, c_void_p, CFUNCTYPE, py_object, cast, byref
 import ctypes
 
@@ -45,7 +45,10 @@ class DFT_C_API:
         self.initializer(self)
     
       # Load the FHI-aims library
-      self.lib = CDLL(self.lib_file, mode=RTLD_LOCAL)
+      # mode=RTLD_GLOBAL is necessary to get rid of the error with MKL:
+      # 		`INTEL MKL ERROR: /opt/intel/oneapi/mkl/2021.4.0/lib/intel64/libmkl_avx512.so.1: undefined symbol: mkl_sparse_optimize_bsr_trsm_i8.`
+      # Details: https://bugs.launchpad.net/ubuntu/+source/intel-mkl/+bug/1947626
+      self.lib = CDLL(self.lib_file, mode=RTLD_GLOBAL)
 
       self.lib.ASI_n_atoms.restype = c_int
       self.lib.ASI_energy.restype = c_double
