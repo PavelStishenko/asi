@@ -61,3 +61,5 @@ class ASI_ASE_calculator(Calculator):
       self.asi.close()
       super().close()
 
+  def __del__(self):
+      self.close()
