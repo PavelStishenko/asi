@@ -18,7 +18,6 @@ build-asi-doc:
 
 pages:
   stage: deploy
-  needs: ["build-asi-doc"]
   script:
     - mkdir .public
     - cp -r ./include/html/* .public
@@ -31,8 +30,8 @@ pages:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 deploy-pyasi:
+  image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: deploy
-  needs: ["build-pyasi"]
   script:
     - apt install --no-install-recommends -qy python3-pip python3-venv
     - pip install twine
