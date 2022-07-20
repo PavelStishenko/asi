@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "asi4py"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="Pavel Stishenko", email="pstishenko@gmail.com" },
 ]
@@ -17,7 +17,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
+dependencies = [
+    "ase>=3.22.1",
+]
 [project.urls]
 "Homepage" = "https://gitlab.com/pvst/asi"
 "Bug Tracker" = "https://gitlab.com/pvst/asi/-/issues"
