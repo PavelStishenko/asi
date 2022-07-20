@@ -35,7 +35,7 @@ deploy-pyasi:
   script:
     - apt install --no-install-recommends -qy python3-pip python3-venv
     - pip install twine
-    - python3 -m twine upload pyasi/dist/*
+    - python3 -m twine upload -u __token__ --non-interactive pyasi/dist/*
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
