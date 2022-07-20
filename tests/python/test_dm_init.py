@@ -7,7 +7,7 @@ from ctypes import cast, py_object, CDLL
 
 from ase.build import molecule
 from ase.io import read, write
-from pyasi.asecalc import ASI_ASE_calculator
+from asi4py.asecalc import ASI_ASE_calculator
 from ase.optimize.lbfgs import LBFGS
 from ase import units
 

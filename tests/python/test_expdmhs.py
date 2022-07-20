@@ -7,7 +7,7 @@ from ctypes import cast, py_object, CDLL, RTLD_GLOBAL
 
 from ase.build import molecule
 from ase.io import read, write
-from pyasi.asecalc import ASI_ASE_calculator
+from asi4py.asecalc import ASI_ASE_calculator
 from ase import units
 
 ASI_LIB_PATH = os.environ['ASI_LIB_PATH']

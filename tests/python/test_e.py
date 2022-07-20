@@ -14,7 +14,7 @@ from mpi4py import MPI
 #print ("MPI.Is_initialized2 = ", MPI.Is_initialized())
 
 from ase.build import molecule
-from pyasi.asecalc import ASI_ASE_calculator
+from asi4py.asecalc import ASI_ASE_calculator
 
 
 def init_via_ase(asi):
