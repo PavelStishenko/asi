@@ -2,6 +2,14 @@ from ctypes import cdll, CDLL, RTLD_GLOBAL
 from ctypes import POINTER, byref, c_int, c_int64, c_bool, c_char_p, c_double, c_void_p, CFUNCTYPE, py_object, cast, byref
 import ctypes
 
+'''
+CDLL(MPI.__file__, mode=RTLD_GLOBAL) is a workaround for a few MPICH bugs, including 
+the bug with non-working MPI_IN_PLACE and 2-stage ELPA solver
+https://bitbucket.org/mpi4py/mpi4py/issues/162/mpi4py-initialization-breaks-fortran
+https://lists.mpich.org/pipermail/discuss/2020-July/006018.html
+'''
+from mpi4py import MPI
+CDLL(MPI.__file__, mode=RTLD_GLOBAL)
 
 import numpy as np
 from numpy.ctypeslib import ndpointer
