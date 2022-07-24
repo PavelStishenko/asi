@@ -7,6 +7,7 @@ export TESTING_PYTHON="${TESTING_PYTHON:-python3}"
 # set default path suggesting that PWD is tests/testcases
 export TESTS="${TESTS:-${PWD}/../build}"
 export PYTESTS="${PYTESTS:-${PWD}/../python/}"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${PWD}/../../build/
 
 env
 
