@@ -3,7 +3,7 @@
 set -e
 ulimit -s unlimited
 
-exit 0 
+#exit 0 
 # temporary disabled test for the following error:
 # At line 158 of file /root/aims/src/basis_sets/grids.f90
 # Fortran runtime error: Attempting to allocate already allocated variable 'r_grid_min'
