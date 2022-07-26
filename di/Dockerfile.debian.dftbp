@@ -9,9 +9,8 @@ RUN apt-get update -qy # 1
 RUN apt-get install --no-install-recommends -qy g++-9 gfortran-9 libopenblas-dev
 RUN apt-get install --no-install-recommends -qy git cmake make wget patch diffutils libopenmpi-dev openmpi-bin libscalapack-openmpi-dev ca-certificates python3 libboost-all-dev
 RUN git clone https://github.com/PavelStishenko/dftbplus ${HOME}/dftbplus
-RUN cd ${HOME}/dftbplus && git checkout api-dm
-ADD config.cmake.lib.patch /config.cmake.lib.patch
-RUN cd ${HOME}/dftbplus && patch config.cmake < /config.cmake.lib.patch
+RUN cd ${HOME}/dftbplus && git checkout api-dm-3
+ADD config.cmake /config.cmake
 
 ENV OMPI_FC=gfortran-9
 ENV OMPI_CXX=g++-9
@@ -20,8 +19,9 @@ ENV OMPI_CC=gcc-9
 # to avoid "DSO missing from command line": https://stackoverflow.com/a/55086637
 ENV LDFLAGS="-Wl,--copy-dt-needed-entries"
 
-RUN cd ${HOME}/dftbplus && FC=mpifort FFLAGS="-w" CC=mpicc cmake -DSCALAPACK_LIBRARY=scalapack-openmpi -DLAPACK_LIBRARY=openblas -DCMAKE_INSTALL_PREFIX=${HOME}/opt/dftbp -B _build .
+RUN cd ${HOME}/dftbplus && FC=mpifort FFLAGS="-w" CC=mpicc cmake -DSCALAPACK_LIBRARY=scalapack-openmpi -DLAPACK_LIBRARY=openblas -DCMAKE_INSTALL_PREFIX=${HOME}/opt/dftbp -C /config.cmake -B _build .
 RUN cd ${HOME}/dftbplus/_build && make -j4 && make install
+RUN apt-get update -qy # 2
 RUN apt-get install --no-install-recommends -qy ase python3-mpi4py
 RUN ${HOME}/dftbplus/utils/get_opt_externals slakos
 
