@@ -9,7 +9,7 @@ AIMS_LIB ?= -laims.220309.scalapack.mpi
 
 DFTBP_LIB_DIR ?= ${HOME}/opt/dftbp-mpi/lib
 DFTBP_LIBS=-lscalapack-openmpi -ldftbplus -lmudpack -lscalapackfx -lmpifx
-
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${DFTBP_LIB_DIR}
 
 TEST_SOURCES = $(wildcard src/test_*.cpp)
 TEST_OBJECTS = $(patsubst src/%.cpp,$(BUILD_PATH)/%.o,$(TEST_SOURCES))
