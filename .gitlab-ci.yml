@@ -78,6 +78,7 @@ build-dftbp-tests:
     - export CORES_NUMBER=`lscpu | awk -- '/Core\(s\) per socket/{C = $NF} /Socket/{S = $NF} END{print S*C}'`
     - export ASI_HOME=${CI_PROJECT_DIR}/install
     - export DFTBP_LIB_DIR=${HOME}/opt/dftbp/lib
+    - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${DFTBP_LIB_DIR}:${CI_PROJECT_DIR}/install/lib
     - export CC=mpicxx
     - env
     - make -j $CORES_NUMBER dftbp_tests
