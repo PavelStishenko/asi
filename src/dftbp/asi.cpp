@@ -41,7 +41,14 @@ int ASI_flavour()
 void ASI_init(const char *inputpath, const char *outputfilename, int mpiComm)
 {
   dftbp_api(&major, &minor, &patch);
-  dftbp_init_mpi(&calculator, outputfilename, mpiComm);
+  if (mpiComm == -1)
+  {
+    dftbp_init(&calculator, outputfilename);
+  }
+  else
+  {
+    dftbp_init_mpi(&calculator, outputfilename, mpiComm);
+  }
   dftbp_get_input_from_file(&calculator, inputpath, &input);
   dftbp_process_input(&calculator, &input);
   

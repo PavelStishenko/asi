@@ -1,5 +1,5 @@
 from ctypes import cdll, CDLL, RTLD_GLOBAL
-from ctypes import POINTER, byref, c_int, c_int64, c_bool, c_char_p, c_double, c_void_p, CFUNCTYPE, py_object, cast, byref
+from ctypes import POINTER, byref, c_int, c_int64, c_int32, c_bool, c_char_p, c_double, c_void_p, CFUNCTYPE, py_object, cast, byref
 import ctypes
 
 '''
@@ -71,6 +71,12 @@ class DFT_C_API:
         self.lib.ASI_register_dm_init_callback.argtypes = [dmhs_callback, c_void_p]
       self.lib.ASI_is_hamiltonian_real.restype = c_bool
       self.lib.ASI_get_basis_size.restype = c_int
+      self.lib.ASI_get_nspin.restype = c_int
+      self.lib.ASI_get_nkpts.restype = c_int
+      self.lib.ASI_get_n_local_ks.restype = c_int
+      self.lib.ASI_get_local_ks.restype = c_int
+      self.lib.ASI_get_local_ks.argtypes = [ndpointer(dtype=np.int32),]
+      self.lib.ASI_is_hamiltonian_real.restype = c_bool
       
       input_filename = {1:"dummy", 2:"dftb_in.hsd"}[self.lib.ASI_flavour()]
       self.lib.ASI_init(input_filename.encode('UTF-8'), self.logfile.encode('UTF-8'), c_int(self.mpi_comm.py2f()))
@@ -142,7 +148,31 @@ class DFT_C_API:
   @property
   def n_basis(self):
     return self.lib.ASI_get_basis_size()
-  
+
+  @property
+  def n_spin(self):
+    return self.lib.ASI_get_nspin()
+
+  @property
+  def n_kpts(self):
+    return self.lib.ASI_get_nkpts()
+
+  @property
+  def n_local_ks(self):
+    return self.lib.ASI_get_n_local_ks()
+
+  @property
+  def local_ks(self):
+    n = self.n_local_ks
+    res = np.zeros((n*2,), dtype=c_int32)
+    n2 =  self.lib.ASI_get_local_ks(res)
+    assert n == n2
+    return res
+
+  @property
+  def is_hamiltonian_real(self):
+    return self.lib.ASI_is_hamiltonian_real()
+
   @property
   def total_forces(self):
     forces_ptr = self.lib.ASI_forces()
