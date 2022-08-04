@@ -21,6 +21,7 @@ from ase import units
 
 libdl = cdll.LoadLibrary('libdl.so')
 dmhs_callback = CFUNCTYPE(None, c_void_p, c_int, c_int, POINTER(c_int), POINTER(c_double))  # void(*)(void *aux_ptr, int iK, int iS, int *blacs_descr, void *blacs_data)
+esp_callback = CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double))   # void(*)(void *aux_ptr, int n, const double *coords, double *potential, double *potential_grad)
 
 class DFT_C_API:
   def __init__(self, lib_file, initializer, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
@@ -69,6 +70,7 @@ class DFT_C_API:
       self.lib.ASI_register_hamiltonian_callback.argtypes = [dmhs_callback, c_void_p]
       if hasattr(self.lib, "ASI_register_dm_init_callback"):
         self.lib.ASI_register_dm_init_callback.argtypes = [dmhs_callback, c_void_p]
+      self.lib.ASI_register_external_potential.argtypes = [esp_callback, c_void_p];
       self.lib.ASI_is_hamiltonian_real.restype = c_bool
       self.lib.ASI_get_basis_size.restype = c_int
       self.lib.ASI_get_nspin.restype = c_int
@@ -130,7 +132,7 @@ class DFT_C_API:
     '''
       self.ext_pot_func returns potential for positive charges
     '''
-    self.ext_pot_func = ext_pot_func
+    self.ext_pot_func = esp_callback(ext_pot_func)
     self.ext_pot_aux_obj = ext_pot_aux_obj
     self.lib.ASI_register_external_potential(self.ext_pot_func, c_void_p.from_buffer(py_object(self.ext_pot_aux_obj)))
 
