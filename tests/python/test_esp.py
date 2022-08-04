@@ -25,7 +25,7 @@ if asilib.ASI_flavour() == 1:
       sc_accuracy_forces=5e-2, 
       sc_iter_limit = 100,
       postprocess_anyway = True,
-      species_dir=os.environ["AIMS_SPECIES_DIR"] + '../light',
+      species_dir=os.environ["AIMS_SPECIES_DIR"] + '/../light',
       compensate_multipole_errors=True,
       spin='collinear',
       multiplicity=3,
