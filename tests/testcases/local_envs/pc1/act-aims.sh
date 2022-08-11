@@ -8,3 +8,4 @@ export AIMS_DIR=~/prg/aims/build-so-GOO/install/lib
 export AIMS_LIB="-laims"
 export CC=mpicxx
 
+export PS1="(aims) $PS1"

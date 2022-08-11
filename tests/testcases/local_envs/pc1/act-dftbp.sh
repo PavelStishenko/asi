@@ -3,3 +3,5 @@ export ASI_LIB_PATH=~/prg/asi/build/libasidftbp.so
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/opt/dftbp-mpi/lib/
 export DFTB_PREFIX=~/prg/slakos/origin/mio-1-1/
 
+export PS1="(dftb+) $PS1"
+
