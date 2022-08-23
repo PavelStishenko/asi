@@ -1,7 +1,7 @@
 from mpi4py import MPI
 
 from ctypes import c_double, c_void_p, CFUNCTYPE, cast, py_object, c_int, POINTER
-from asi4py.pyasi import DFT_C_API
+from asi4py.pyasi import ASIlib
 import numpy as np
 from numpy.testing import assert_allclose
 from ase.build import molecule
@@ -67,19 +67,19 @@ h2o1 = molecule('H2O')
 h2o2 = h2o1.copy()
 h2o2.translate([0, 0, d])
 
-with DFT_C_API(lib_file, initializer, MPI.COMM_WORLD, h2o1 + h2o2, 'asi.temp.0') as asi0:
+with ASIlib(lib_file, initializer, MPI.COMM_WORLD, h2o1 + h2o2, 'asi.temp.0') as asi0:
   asi0.run()
   E0 = asi0.total_energy
 parprint (f'E0={E0:.6f}')
 
-with DFT_C_API(lib_file, initializer, MPI.COMM_WORLD, h2o1, 'asi.temp.1') as asi1:
+with ASIlib(lib_file, initializer, MPI.COMM_WORLD, h2o1, 'asi.temp.1') as asi1:
   asi1.run()
   E01 = asi1.total_energy
   pot1 = get_pot(asi1, h2o2.positions / units.Bohr)
 
 parprint (f'E01={E01:.6f}')
 
-with DFT_C_API(lib_file, initializer, MPI.COMM_WORLD, h2o2, 'asi.temp.2') as asi2:
+with ASIlib(lib_file, initializer, MPI.COMM_WORLD, h2o2, 'asi.temp.2') as asi2:
   asi2.run()
   E02 = asi2.total_energy
   pot2 = get_pot(asi2, h2o1.positions / units.Bohr)
@@ -94,13 +94,13 @@ parprint (f'dE={dE:.6f}')
 
 for i in range (3):
 
-  with DFT_C_API(lib_file, initializer, MPI.COMM_WORLD, h2o2, 'asi.temp.2') as asi2:
+  with ASIlib(lib_file, initializer, MPI.COMM_WORLD, h2o2, 'asi.temp.2') as asi2:
     asi2.register_external_potential(*pot1)
     asi2.run()
     new_pot2 = get_pot(asi2, h2o1.positions / units.Bohr)
     E2 = asi2.total_energy
 
-  with DFT_C_API(lib_file, initializer, MPI.COMM_WORLD, h2o1, 'asi.temp.1') as asi1:
+  with ASIlib(lib_file, initializer, MPI.COMM_WORLD, h2o1, 'asi.temp.1') as asi1:
     asi1.register_external_potential(*pot2)
     asi1.run()
     new_pot1 = get_pot(asi1, h2o2.positions / units.Bohr)
