@@ -23,7 +23,7 @@ libdl = cdll.LoadLibrary('libdl.so')
 dmhs_callback = CFUNCTYPE(None, c_void_p, c_int, c_int, POINTER(c_int), POINTER(c_double))  # void(*)(void *aux_ptr, int iK, int iS, int *blacs_descr, void *blacs_data)
 esp_callback = CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double))   # void(*)(void *aux_ptr, int n, const double *coords, double *potential, double *potential_grad)
 
-class DFT_C_API:
+class ASIlib:
   def __init__(self, lib_file, initializer, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
     self.lib_file = Path(lib_file).resolve()
     self.initializer = initializer

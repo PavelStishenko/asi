@@ -15,10 +15,9 @@ from mpi4py import MPI
 
 from ase.build import molecule
 from asi4py.asecalc import ASI_ASE_calculator
-
+from mpiprint import parprint, ordprint
 
 def init_via_ase(asi):
-  return
   from ase.calculators.aims import Aims
   calc = Aims(xc='pbe', 
     relativistic="atomic_zora scalar",
@@ -36,5 +35,5 @@ def init_via_ase(asi):
 
 atoms = molecule('H2O')
 atoms.calc = ASI_ASE_calculator(ASI_LIB_PATH, init_via_ase, MPI.COMM_WORLD, atoms)
-print(f'E = {atoms.get_potential_energy():.6f}')
+parprint(f'E = {atoms.get_potential_energy():.6f}')
 

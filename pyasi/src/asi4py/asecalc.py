@@ -1,5 +1,5 @@
 from ase.calculators.calculator import Calculator, all_changes
-from .pyasi import DFT_C_API
+from .pyasi import ASIlib
 from ase import units
 
 """
@@ -20,7 +20,7 @@ class ASI_ASE_calculator(Calculator):
   def __init__(self, lib_file_name, init_func, mpi_comm, atoms, work_dir='asi.temp', logfile='asi.log'):
     Calculator.__init__(self)
     self.atoms = atoms.copy()
-    self.asi = DFT_C_API(lib_file_name, init_func, mpi_comm, atoms, work_dir, logfile)
+    self.asi = ASIlib(lib_file_name, init_func, mpi_comm, atoms, work_dir, logfile)
     self.asi.init()
     self.DM_init_callback = None
 
