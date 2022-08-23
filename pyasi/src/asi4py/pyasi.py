@@ -18,10 +18,32 @@ import sys
 from pathlib import Path
 import os, shutil
 from ase import units
+from scalapack4py import ScaLAPACK4py
 
 libdl = cdll.LoadLibrary('libdl.so')
 dmhs_callback = CFUNCTYPE(None, c_void_p, c_int, c_int, POINTER(c_int), POINTER(c_double))  # void(*)(void *aux_ptr, int iK, int iS, int *blacs_descr, void *blacs_data)
 esp_callback = CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double))   # void(*)(void *aux_ptr, int n, const double *coords, double *potential, double *potential_grad)
+
+def default_saving_callback(aux, iK, iS, descr, data):
+  try:
+    asi, storage_dict, label = cast(aux, py_object).value
+    data = asi.scalapack.gather_numpy(descr, data, (asi.n_basis,asi.n_basis))
+    if data is not None:
+      storage_dict[(iK, iS)] = data.copy()
+  except Exception as eee:
+    print (f"Something happened in ASI default_saving_callback {label}: {eee}\nAborting...")
+    MPI.COMM_WORLD.Abort(1)
+
+def default_loading_callback(aux, iK, iS, descr, data):
+  try:
+    asi, storage_dict, label = cast(aux, py_object).value
+    m = storage_dict[(iK, iS)] if asi.scalapack.is_root(descr) else None
+    assert m is None or (asi.n_basis == m.shape[0]) and (asi.n_basis == m.shape[1]), \
+                     f"m.shape=={m.shape} != asi.n_basis=={asi.n_basis}"
+    asi.scalapack.scatter_numpy(m, descr, data)
+  except Exception as eee:
+    print (f"Something happened in ASI default_loading_callback {label}: {eee}\nAborting...")
+    MPI.COMM_WORLD.Abort(1)
 
 class ASIlib:
   def __init__(self, lib_file, initializer, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
@@ -58,6 +80,7 @@ class ASIlib:
       # 		`INTEL MKL ERROR: /opt/intel/oneapi/mkl/2021.4.0/lib/intel64/libmkl_avx512.so.1: undefined symbol: mkl_sparse_optimize_bsr_trsm_i8.`
       # Details: https://bugs.launchpad.net/ubuntu/+source/intel-mkl/+bug/1947626
       self.lib = CDLL(self.lib_file, mode=RTLD_GLOBAL)
+      self.scalapack = ScaLAPACK4py(self.lib)
 
       self.lib.ASI_n_atoms.restype = c_int
       self.lib.ASI_energy.restype = c_double
@@ -108,10 +131,10 @@ class ASIlib:
     finally:
       os.chdir(curdir)
 
-  def register_DM_init(self, DM_init_callback, DM_init_aux):
-    self.DM_init_callback = dmhs_callback(DM_init_callback)
-    self.DM_init_aux = DM_init_aux
-    self.lib.ASI_register_dm_init_callback(self.DM_init_callback, c_void_p.from_buffer(py_object(self.DM_init_aux)))
+  def register_DM_init(self, dm_init_callback, dm_init_aux):
+    self.dm_init_callback = dmhs_callback(dm_init_callback)
+    self.dm_init_aux = dm_init_aux
+    self.lib.ASI_register_dm_init_callback(self.dm_init_callback, c_void_p.from_buffer(py_object(self.dm_init_aux)))
 
   def register_overlap_callback(self, overlap_callback, overlap_aux):
     self.overlap_callback = dmhs_callback(overlap_callback)
@@ -204,6 +227,26 @@ class ASIlib:
   @property
   def is_eigen_real(self):
     return self.lib.ASI_is_hamiltonian_real()
+  
+  @property
+  def keep_density_matrix(self):
+    return hasattr(self, 'dm_callback')
 
+  @keep_density_matrix.setter
+  def keep_density_matrix(self, value):
+    assert (value, 'callback unsetting not implemented')
+    if self.keep_density_matrix:
+      return
 
+    self.dm_storage = {}
+    self.register_dm_callback(default_saving_callback, (self, self.dm_storage, 'DM calc'))
+
+  @property
+  def init_density_matrix(self):
+    return hasattr(self, 'dm_init_callback')
+ 
+  @init_density_matrix.setter
+  def init_density_matrix(self, value):
+    self.dm_init_storage = value
+    self.register_DM_init(default_loading_callback, (self, self.dm_init_storage, 'DM init'))
 

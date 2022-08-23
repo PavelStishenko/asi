@@ -1,7 +1,6 @@
 import sys, os
 import numpy as np
 from mpi4py import MPI
-from scalapack4py import ScaLAPACK4py
 from mpiprint import parprint, ordprint
 from ctypes import cast, py_object, CDLL
 
@@ -12,7 +11,6 @@ from ase.optimize.lbfgs import LBFGS
 from ase import units
 
 cwd = os.getcwd()
-
 
 try:
   import dmpredictXXX # provoke
@@ -32,7 +30,6 @@ except ModuleNotFoundError:
 #aims_lib_path = f"{os.environ['HOME']}/prg/aims/build-so-3/libaims.220309.scalapack.mpi.so"
 ASI_LIB_PATH = os.environ['ASI_LIB_PATH']
 
-sl = ScaLAPACK4py(CDLL(ASI_LIB_PATH))
 
 def make_aims_calc(iPI=False):
   from ase.calculators.aims import Aims
@@ -72,38 +69,11 @@ def predict_dm(water_clusters):
     total_dm[i*44:(i+1)*44, i*44:(i+1)*44] = mol_dm
   return total_dm
   #return np.loadtxt(f"{cwd}/dm_1_1.init.full").T
-  
-def dm_init(aux, iK, iS, descr, data):
-  asi = cast(aux, py_object).value
-  try:
-    is_distributed=False
-    if descr:
-      descr = sl.wrap_blacs_desc(descr)
-      if descr.is_distributed:
-        is_distributed = True
-        is_root = (descr.myrow==0 and descr.mycol==0)
-    
-    locshape = (descr.locrow, descr.loccol) if is_distributed else (asi.n_basis,asi.n_basis)
-
-    data = np.ctypeslib.as_array(data, shape=locshape).T
-    
-    #if not is_distributed or is_root: TODO 
-    predicted_dm = predict_dm(asi.atoms)
-    if is_distributed and not is_root:
-      predicted_dm = None
-
-    if is_distributed:
-      sl.scatter(predicted_dm, descr, data)
-    else:
-      data[:, :] = predicted_dm
-
-    #parprint ("dm predict done")
-  except Exception as eee:
-    print ("Something happened in dm_init", eee)
 
 
 def dyn_step(asi):
-  atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi) # reset dm_init callback
+  #atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi) # reset dm_init callback
+  atoms.calc.asi.init_density_matrix = {(1,1):predict_dm(atoms)}
   fmax = max(np.linalg.norm(atoms.get_forces(), axis=-1))
   parprint(f'E = {atoms.get_potential_energy():.6f} fmax = {fmax:.6f}' )
 
@@ -116,7 +86,7 @@ atoms = read(sys.argv[1])
 ##
 if True:
   atoms.calc = ASI_ASE_calculator(ASI_LIB_PATH, init_aims, None, atoms)
-  atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi)
+  atoms.calc.asi.init_density_matrix = {(1,1):predict_dm(atoms)}
 elif False:
   atoms.calc = make_socket_calc()
 else:
