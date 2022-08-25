@@ -26,10 +26,11 @@ esp_callback = CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_dou
 
 def default_saving_callback(aux, iK, iS, descr, data):
   try:
-    asi, storage_dict, label = cast(aux, py_object).value
+    asi, storage_dict, cnt_dict, label = cast(aux, py_object).value
     data = asi.scalapack.gather_numpy(descr, data, (asi.n_basis,asi.n_basis))
     if data is not None:
       storage_dict[(iK, iS)] = data.copy()
+    cnt_dict[(iK, iS)] = cnt_dict.get((iK, iS), 0) + 1
   except Exception as eee:
     print (f"Something happened in ASI default_saving_callback {label}: {eee}\nAborting...")
     MPI.COMM_WORLD.Abort(1)
@@ -239,7 +240,36 @@ class ASIlib:
       return
 
     self.dm_storage = {}
-    self.register_dm_callback(default_saving_callback, (self, self.dm_storage, 'DM calc'))
+    self.dm_calc_cnt = {}
+    self.register_dm_callback(default_saving_callback, (self, self.dm_storage, self.dm_calc_cnt, 'DM calc'))
+
+  @property
+  def keep_hamiltonian(self):
+    return hasattr(self, 'hamiltonian_callback')
+
+  @keep_hamiltonian.setter
+  def keep_hamiltonian(self, value):
+    assert (value, 'callback unsetting not implemented')
+    if self.keep_hamiltonian:
+      return
+
+    self.hamiltonian_storage = {}
+    self.hamiltonian_calc_cnt = {}
+    self.register_hamiltonian_callback(default_saving_callback, (self, self.hamiltonian_storage, self.hamiltonian_calc_cnt, 'H calc'))
+
+  @property
+  def keep_overlap(self):
+    return hasattr(self, 'overlap_callback')
+
+  @keep_overlap.setter
+  def keep_overlap(self, value):
+    assert (value, 'callback unsetting not implemented')
+    if self.keep_overlap:
+      return
+
+    self.overlap_storage = {}
+    self.overlap_calc_cnt = {}
+    self.register_overlap_callback(default_saving_callback, (self, self.overlap_storage, self.overlap_calc_cnt, 'S calc'))
 
   @property
   def init_density_matrix(self):
