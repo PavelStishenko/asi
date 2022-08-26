@@ -41,6 +41,12 @@ else:
           Hamiltonian_MaxAngularMomentum_H='"s"')
     calc.write_input(asi.atoms, properties=['forces'])
 
+def utriang2herm(X):
+  i_lower = np.tril_indices(X.shape[0], -1)
+  X = X.copy()
+  X[i_lower] = X.conj().T[i_lower]
+  return X
+
 def dm_calc(aux, iK, iS, descr, data):
   asi = cast(aux, py_object).value
   asi.scf_cnt += 1
@@ -57,10 +63,11 @@ def dm_calc(aux, iK, iS, descr, data):
     # single process case:
     #print (f"dm_calc invoked {asi.scf_cnt}")
     data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
+    asi.dm = utriang2herm(data)
     E = atoms.calc.asi.total_energy if asilib.ASI_flavour() == 1 else 0.0 # total_energy calls DM calculation in DFTB+ causing infinite recursion
-    parprint (f"{asi.scf_cnt} S*D = {np.sum(data * asi.overlap):.6f} E = {E * units.Hartree:.6f}")
+    parprint (f"{asi.scf_cnt} S*D = {np.sum(asi.dm * asi.overlap):.6f} E = {E * units.Hartree:.6f}")
     if hasattr(asi,"hamiltonian"):
-      parprint (f"{asi.scf_cnt} H*D = {np.sum(data * asi.hamiltonian):.8f}")
+      parprint (f"{asi.scf_cnt} H*D = {np.sum(asi.dm * asi.hamiltonian):.8f}")
   except Exception as eee:
     print ("Something happened in dm_calc", eee)
 

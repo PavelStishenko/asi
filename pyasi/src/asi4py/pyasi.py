@@ -24,12 +24,18 @@ libdl = cdll.LoadLibrary('libdl.so')
 dmhs_callback = CFUNCTYPE(None, c_void_p, c_int, c_int, POINTER(c_int), POINTER(c_double))  # void(*)(void *aux_ptr, int iK, int iS, int *blacs_descr, void *blacs_data)
 esp_callback = CFUNCTYPE(None, c_void_p, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double))   # void(*)(void *aux_ptr, int n, const double *coords, double *potential, double *potential_grad)
 
+def ltriang2herm_inplace(X):
+  i_upper = np.triu_indices(X.shape[0], 1)
+  X[i_upper] = X.T[i_upper].conj()
+
 def default_saving_callback(aux, iK, iS, descr, data):
   try:
     asi, storage_dict, cnt_dict, label = cast(aux, py_object).value
     data = asi.scalapack.gather_numpy(descr, data, (asi.n_basis,asi.n_basis))
     if data is not None:
       storage_dict[(iK, iS)] = data.copy()
+      if asi.implementation == "DFTB+":
+        ltriang2herm_inplace(storage_dict[(iK, iS)])
     cnt_dict[(iK, iS)] = cnt_dict.get((iK, iS), 0) + 1
   except Exception as eee:
     print (f"Something happened in ASI default_saving_callback {label}: {eee}\nAborting...")
@@ -166,6 +172,14 @@ class ASIlib:
     esp_grad = np.zeros((n,3), dtype=c_double)
     self.lib.ASI_calc_esp(c_int(n), coords.ravel(), esp, esp_grad) 
     return esp, esp_grad
+
+  @property
+  def flavour(self):
+    return self.lib.ASI_flavour()
+  
+  @property
+  def implementation(self):
+    return {1:"FHI-AIMS", 2:"DFTB+"}[self.flavour]
 
   @property
   def n_atoms(self):
