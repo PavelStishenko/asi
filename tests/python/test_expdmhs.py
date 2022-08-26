@@ -39,7 +39,7 @@ else:
           Hamiltonian_MaxAngularMomentum_='',
           Hamiltonian_MaxAngularMomentum_O='"p"',
           Hamiltonian_MaxAngularMomentum_H='"s"')
-    calc.write_input(asi.atoms, properties=['forces'])
+    calc.write_input(asi.atoms) # , properties=['forces']
 
 def utriang2herm(X):
   i_lower = np.tril_indices(X.shape[0], -1)
@@ -64,6 +64,8 @@ def dm_calc(aux, iK, iS, descr, data):
     #print (f"dm_calc invoked {asi.scf_cnt}")
     data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
     asi.dm = utriang2herm(data)
+    #parprint("asi.dm")
+    #np.savetxt(sys.stdout, asi.dm, fmt='%10.5f')
     E = atoms.calc.asi.total_energy if asilib.ASI_flavour() == 1 else 0.0 # total_energy calls DM calculation in DFTB+ causing infinite recursion
     parprint (f"{asi.scf_cnt} S*D = {np.sum(asi.dm * asi.overlap):.6f} E = {E * units.Hartree:.6f}")
     if hasattr(asi,"hamiltonian"):
@@ -87,6 +89,8 @@ def overlap_calc(aux, iK, iS, descr, data):
     #print (f"dm_calc invoked {asi.scf_cnt}")
     data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
     asi.overlap = data.copy()
+    #parprint("asi.overlap")
+    #np.savetxt(sys.stdout, asi.overlap, fmt='%10.5f')
   except Exception as eee:
     print ("Something happened in dm_calc", eee)
 
@@ -106,6 +110,8 @@ def hamiltonian_calc(aux, iK, iS, descr, data):
     #print (f"dm_calc invoked {asi.scf_cnt}")
     data = np.ctypeslib.as_array(data, shape=(asi.n_basis,asi.n_basis))
     asi.hamiltonian = data.copy()
+    #parprint("asi.hamiltonian")
+    #np.savetxt(sys.stdout, asi.hamiltonian, fmt='%10.5f')
   except Exception as eee:
     print ("Something happened in dm_calc", eee)
 
