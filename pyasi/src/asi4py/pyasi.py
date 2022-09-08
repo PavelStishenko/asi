@@ -50,6 +50,11 @@ def default_loading_callback(aux, iK, iS, descr, data):
     asi.scalapack.scatter_numpy(m, descr, data)
   except Exception as eee:
     print (f"Something happened in ASI default_loading_callback {label}: {eee}\nAborting...")
+    print ("m is None = ", m is None)
+    traceback = eee.__traceback__
+    while traceback:
+        print(f"{traceback.tb_frame.f_code.co_filename} : {traceback.tb_lineno}")
+        traceback = traceback.tb_next
     MPI.COMM_WORLD.Abort(1)
 
 class ASIlib:
@@ -249,7 +254,7 @@ class ASIlib:
 
   @keep_density_matrix.setter
   def keep_density_matrix(self, value):
-    assert (value, 'callback unsetting not implemented')
+    assert value, 'callback unsetting not implemented'
     if self.keep_density_matrix:
       return
 
@@ -263,7 +268,7 @@ class ASIlib:
 
   @keep_hamiltonian.setter
   def keep_hamiltonian(self, value):
-    assert (value, 'callback unsetting not implemented')
+    assert value, 'callback unsetting not implemented'
     if self.keep_hamiltonian:
       return
 
@@ -277,7 +282,7 @@ class ASIlib:
 
   @keep_overlap.setter
   def keep_overlap(self, value):
-    assert (value, 'callback unsetting not implemented')
+    assert value, 'callback unsetting not implemented'
     if self.keep_overlap:
       return
 
