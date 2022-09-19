@@ -10,7 +10,7 @@ build-asi-doc:
   script:
     - apt install --no-install-recommends -qy doxygen python3-sphinx-automodapi
     - cd include && doxygen && cd ..
-    - pyasi/docs && make html
+    - cd pyasi/docs && make html
   artifacts:
     name: "$CI_JOB_NAME"
     when: always
