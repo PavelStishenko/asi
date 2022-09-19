@@ -8,19 +8,22 @@ build-asi-doc:
   image: registry.gitlab.com/pvst/asi/debian-dftbp
   stage: buildlib
   script:
-    - apt install --no-install-recommends -qy doxygen
-    - cd include && doxygen
+    - apt install --no-install-recommends -qy doxygen python3-sphinx-automodapi
+    - cd include && doxygen && cd ..
+    - pyasi/docs && make html
   artifacts:
     name: "$CI_JOB_NAME"
     when: always
     paths:
       - include/html
+      - pyasi/docs/build/html
 
 pages:
   stage: deploy
   script:
     - mkdir .public
     - cp -r ./include/html/* .public
+    - cp -r ./pyasi/docs/build/html/* .public
     - rm -rf public
     - mv .public public
   artifacts:

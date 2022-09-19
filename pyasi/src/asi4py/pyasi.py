@@ -58,6 +58,9 @@ def default_loading_callback(aux, iK, iS, descr, data):
     MPI.COMM_WORLD.Abort(1)
 
 class ASIlib:
+  '''
+    Python wrapper for dynamically loaded library with ASI API implementation
+  '''
   def __init__(self, lib_file, initializer, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
     self.lib_file = Path(lib_file).resolve()
     self.initializer = initializer

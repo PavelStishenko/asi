@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "asi4py"
-version = "0.0.19"
+version = "0.0.20"
 authors = [
   { name="Pavel Stishenko", email="pstishenko@gmail.com" },
 ]

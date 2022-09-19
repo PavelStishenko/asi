@@ -14,6 +14,9 @@ hartree = units.Hartree
 
 
 class ASI_ASE_calculator(Calculator):
+  '''
+    ASI ASI calc
+  '''
   implemented_properties = ['energy', 'free_energy', 'forces', 'charges']
   supported_changes = {}
 
@@ -31,7 +34,6 @@ class ASI_ASE_calculator(Calculator):
 
   def calculate(self, atoms=None, properties=['energy'],
                 system_changes=all_changes):
-      #parprint (f"calculate: \n\tatoms={atoms}\n\tproperties={properties}\n\tsystem_changes={system_changes}")
       bad = [change for change in system_changes
              if change not in self.supported_changes]
 
@@ -39,21 +41,18 @@ class ASI_ASE_calculator(Calculator):
       # all_changes.  After that, only positions and cell may change.
       if self.atoms is not None and any(bad):
           raise PropertyNotImplementedError(
-              'Cannot change {} through IPI protocol.  '
-              'Please create new socket calculator.'
+              'Cannot change {} through ASI API.  '
               .format(bad if len(bad) > 1 else bad[0]))
 
       self.atoms = atoms.copy()
       self.asi.atoms = atoms
       self.asi.set_coords()
-      #parprint (atoms.positions)
       results = {}
       self.asi.run()
       results['free_energy'] = results['energy'] = self.asi.total_energy * hartree
       if self.asi.total_forces is not None:
         results['forces'] = self.asi.total_forces * (hartree / bohr)
       # Charges computation breaks total_energy on subsequent SCF calculations in AIMS:  results['charges'] = self.asi.atomic_charges
-      #parprint(results)
 
       self.results.update(results)
 
