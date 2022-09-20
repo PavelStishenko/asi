@@ -11,7 +11,7 @@ build-asi-doc:
   script:
     - apt install --no-install-recommends -qy doxygen python3-sphinx-automodapi python3-pip python3-venv
     - cd include && doxygen && cd ..
-    - pip install --force-reinstall --no-dependencies  `ls -tr pyasi/dist/asi4py-0.0.*.whl | tail -n 1`
+    - pip install --force-reinstall `ls -tr pyasi/dist/asi4py-0.0.*.whl | tail -n 1`
     - cd pyasi/docs && make html
   artifacts:
     name: "$CI_JOB_NAME"
