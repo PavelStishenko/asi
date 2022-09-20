@@ -1,9 +1,7 @@
-import sys, os
+import os
 import numpy as np
-from ctypes import cast, py_object, CDLL, RTLD_GLOBAL
 from ase.build import molecule
 from asi4py import ASI_ASE_calculator
-from ase import units
 
 def write_input(asi):
   from ase.calculators.dftb import Dftb
