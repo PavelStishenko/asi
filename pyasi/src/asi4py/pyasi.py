@@ -61,7 +61,25 @@ class ASIlib:
   '''
     Python wrapper for dynamically loaded library with ASI API implementation
   '''
-  def __init__(self, lib_file, initializer, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
+  def __init__(self, lib_file: str, initializer, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
+    '''
+      Constructor for ASI library wrapper. Library itself is NOT loaded here.
+      
+      Parameters
+      ----------
+        lib_file : str 
+          Path to the ASI-implementing shared object library
+        initializer : function 
+          Function or callable object that is supposed to create input files for the library in `work_dir`
+        mpi_comm : int 
+          MPI communicator, if is `None`, then `mpi4py.MPI.COMM_WORLD` will be used
+        atoms : ase.Atoms
+          ASE Atoms object for calculations. An internal copy will be created
+        work_dir : str
+          Working dir for `ASI_init()`, `ASI_run()`, and `ASI_finalize()` calls
+        logfile : str 
+          Log file for the ASI library
+    '''
     self.lib_file = Path(lib_file).resolve()
     self.initializer = initializer
     if mpi_comm is not None:
@@ -83,6 +101,13 @@ class ASIlib:
     self.close()  
 
   def init(self):
+    """
+      Calls `self.initializer` (see __init__ argument of the same name), 
+      load the ASI-implementing shared object library using `ctypes.CDLL`, and
+      calls `ASI_init()`. All of the above is performed in `self.work_dir` as a current directory.
+      
+       No ASI calls are should be attempted before that function call.
+    """
     curdir = os.getcwd()
     try:
       os.chdir(self.work_dir)
@@ -127,6 +152,9 @@ class ASIlib:
       os.chdir(curdir)
   
   def close(self):
+    '''
+      Calls `ASI_finalize()`. No ASI calls are should be attempted after that function call.
+    '''
     curdir = os.getcwd()
     try:
       os.chdir(self.work_dir)
@@ -139,6 +167,11 @@ class ASIlib:
       os.chdir(curdir)
     
   def run(self):
+    """
+      Run calculation
+      
+      Calls `ASI_run()`
+    """
     curdir = os.getcwd()
     try:
       os.chdir(self.work_dir)
@@ -147,34 +180,108 @@ class ASIlib:
       os.chdir(curdir)
 
   def register_DM_init(self, dm_init_callback, dm_init_aux):
+    """
+      Register callback function to be called on Density Matrix initilaization before SCF loop
+      
+      Calls `ASI_register_dm_init_callback()`
+
+      Parameters
+      ----------
+      dm_init_callback : dmhs_callback
+        Callback function
+      dm_init_aux : Object
+        Auxiliary object for the callback
+    """
     self.dm_init_callback = dmhs_callback(dm_init_callback)
     self.dm_init_aux = dm_init_aux
     self.lib.ASI_register_dm_init_callback(self.dm_init_callback, c_void_p.from_buffer(py_object(self.dm_init_aux)))
 
   def register_overlap_callback(self, overlap_callback, overlap_aux):
+    """
+      Register callback function to be called on overlap matrix calculation
+      
+      Calls `ASI_register_overlap_callback()`
+
+      Parameters
+      ----------
+      overlap_callback : dmhs_callback
+        Callback function
+      overlap_aux : Object
+        Auxiliary object for the callback
+    """
     self.overlap_callback = dmhs_callback(overlap_callback)
     self.overlap_aux = overlap_aux
     self.lib.ASI_register_overlap_callback(self.overlap_callback, c_void_p.from_buffer(py_object(self.overlap_aux)))
 
   def register_hamiltonian_callback(self, hamiltonian_callback, hamiltonian_aux):
+    """
+      Register callback function to be called on hamiltonian matrix calculation
+      
+      Calls `ASI_register_hamiltonian_callback()`
+
+      Parameters
+      ----------
+      hamiltonian_callback : dmhs_callback
+        Callback function
+      hamiltonian_aux : Object
+        Auxiliary object for the callback
+    """
     self.hamiltonian_callback = dmhs_callback(hamiltonian_callback)
     self.hamiltonian_aux = hamiltonian_aux
     self.lib.ASI_register_hamiltonian_callback(self.hamiltonian_callback, c_void_p.from_buffer(py_object(self.hamiltonian_aux)))
 
   def register_dm_callback(self, dm_callback, dm_aux):
+    """
+      Register callback function to be called on Density Matrix calculation
+      
+      Calls `ASI_register_dm_callback()`
+
+      Parameters
+      ----------
+      dm_callback : dmhs_callback
+        Callback function
+      dm_aux : Object
+        Auxiliary object for the callback
+    """
     self.dm_callback = dmhs_callback(dm_callback)
     self.dm_aux = dm_aux
     self.lib.ASI_register_dm_callback(self.dm_callback, c_void_p.from_buffer(py_object(self.dm_aux)))
 
   def register_external_potential(self, ext_pot_func, ext_pot_aux_obj):
-    '''
-      self.ext_pot_func returns potential for positive charges
-    '''
+    """
+      Register callback function for evaliation of external electrostatic potential
+      
+      Calls `ASI_register_external_potential()`
+
+      Parameters
+      ----------
+      ext_pot_func : esp_callback
+        Callback function
+      ext_pot_aux_obj : Object
+        Auxiliary object for the callback
+    """
     self.ext_pot_func = esp_callback(ext_pot_func)
     self.ext_pot_aux_obj = ext_pot_aux_obj
     self.lib.ASI_register_external_potential(self.ext_pot_func, c_void_p.from_buffer(py_object(self.ext_pot_aux_obj)))
 
   def calc_esp(self, coords):
+    """
+      Compute electrostatic potential (ESP) and its gradient in arbitrary points
+      
+      Calls `ASI_calc_esp()`
+
+      Parameters
+      ----------
+      coords : c_double[n, 3]
+        Coordinates of points to compute ESP and its gradient
+      
+      Returns
+      -------
+      esp : c_double[n]
+        ESP in corresponding points
+      esp_grad : c_double[n, 3]
+        ESP gradient in corresponding points
+    """
     n = len(coords)
     esp = np.zeros((n,), dtype=c_double)
     esp_grad = np.zeros((n,3), dtype=c_double)
@@ -183,34 +290,74 @@ class ASIlib:
 
   @property
   def flavour(self):
+    """
+      int: ID of ASI implementation flavour
+      
+      Calls `ASI_flavour()`
+    """
     return self.lib.ASI_flavour()
   
   @property
   def implementation(self):
+    """
+      str: Name of ASI implementation
+      
+      Calls `ASI_flavour()`
+    """
     return {1:"FHI-AIMS", 2:"DFTB+"}[self.flavour]
 
   @property
   def n_atoms(self):
+    """
+      int: Number of atoms of the system
+
+      Calls `ASI_n_atoms()`
+    """
     return self.lib.ASI_n_atoms()
 
   @property
   def n_basis(self):
+    """
+      int: Number of basis functions
+
+      Calls `ASI_get_basis_size()`
+    """
     return self.lib.ASI_get_basis_size()
 
   @property
   def n_spin(self):
+    """
+      int: Number of spin channels
+
+      Calls `ASI_get_nspin()`
+    """
     return self.lib.ASI_get_nspin()
 
   @property
   def n_kpts(self):
+    """
+      int: Number of k-points
+
+      Calls `ASI_get_nkpts()`
+    """
     return self.lib.ASI_get_nkpts()
 
   @property
   def n_local_ks(self):
+    """
+      int: Number of pairs (k-point, spin-chanel-index) processed by current MPI process
+
+      Calls `ASI_get_n_local_ks()`
+    """
     return self.lib.ASI_get_n_local_ks()
 
   @property
   def local_ks(self):
+    """
+      int[n_local_ks * 2]: List of pairs (k-point, spin-chanel-index) processed by current MPI process
+
+      Calls `ASI_get_local_ks()`
+    """
     n = self.n_local_ks
     res = np.zeros((n*2,), dtype=c_int32)
     n2 =  self.lib.ASI_get_local_ks(res)
@@ -219,10 +366,20 @@ class ASIlib:
 
   @property
   def is_hamiltonian_real(self):
+    """
+      bool: `True`  if Hamiltonian of current system is real. `False` if Hamiltonian of current system is complex.
+      
+      Calls `ASI_is_hamiltonian_real()`
+    """
     return self.lib.ASI_is_hamiltonian_real()
 
   @property
   def total_forces(self):
+    """
+      c_double[n_atoms, 3 ]: Total forces acting on system atoms.
+      
+      Calls `ASI_forces()`
+    """
     forces_ptr = self.lib.ASI_forces()
     if forces_ptr:
       return np.ctypeslib.as_array(forces_ptr, shape=(self.n_atoms, 3))
@@ -231,6 +388,11 @@ class ASIlib:
 
   @property
   def atomic_charges(self):
+    """
+      c_double[n_atoms]: Atomic charges. Default partitioning scheme is implementation-dependent
+      
+      Calls `ASI_atomic_charges(-1)` (`-1` for default partitioning scheme)
+    """
     chg_ptr = self.lib.ASI_atomic_charges(-1)
     if chg_ptr:
       return np.ctypeslib.as_array(chg_ptr, shape=(self.n_atoms,)).copy()
@@ -239,6 +401,11 @@ class ASIlib:
 
   @property
   def total_energy(self):
+    """
+      c_double: Total energy of the system
+      
+      Calls `ASI_energy()`
+    """
     return self.lib.ASI_energy()
   
   def set_coords(self, coords=None):
@@ -246,13 +413,15 @@ class ASIlib:
       assert False
       self.atoms.positions[:] = coords
     self.lib.ASI_set_atom_coords((self.atoms.positions / units.Bohr).ctypes.data_as(c_void_p), len(self.atoms))
-    
-  @property
-  def is_eigen_real(self):
-    return self.lib.ASI_is_hamiltonian_real()
-  
+
   @property
   def keep_density_matrix(self):
+    """
+      bool : Flag to save Density Matrix in `self.dm_storage` dict and count number
+        of the matrix calculations in `self.dm_calc_cnt` dict.
+        
+        Dictionaries are indexed by (k-point, spin-chanel-index) pairs.
+    """
     return hasattr(self, 'dm_callback')
 
   @keep_density_matrix.setter
@@ -267,6 +436,12 @@ class ASIlib:
 
   @property
   def keep_hamiltonian(self):
+    """
+      bool : Flag to save Hamiltonian matrix in `self.hamiltonian_storage` dict and count number
+        of the matrix calculations in `self.hamiltonian_calc_cnt` dict.
+        
+        Dictionaries are indexed by (k-point, spin-chanel-index) pairs.
+    """
     return hasattr(self, 'hamiltonian_callback')
 
   @keep_hamiltonian.setter
@@ -281,6 +456,12 @@ class ASIlib:
 
   @property
   def keep_overlap(self):
+    """
+      bool : Flag to save overlap matrix in `self.overlap_storage` dict and count number
+        of the matrix calculations in `self.overlap_calc_cnt` dict.
+
+        Dictionaries are indexed by (k-point, spin-chanel-index) pairs.
+    """
     return hasattr(self, 'overlap_callback')
 
   @keep_overlap.setter
@@ -295,6 +476,10 @@ class ASIlib:
 
   @property
   def init_density_matrix(self):
+    """
+      bool / c_double[n_basis, n_basis] : Set with a density matrix t be used for SCF loop initialization.
+      Reading that property returns True if the density matrix initialization is enabled
+    """
     return hasattr(self, 'dm_init_callback')
  
   @init_density_matrix.setter

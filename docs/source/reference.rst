@@ -6,6 +6,7 @@ ASIlib class
 
 .. automodule:: asi4py.pyasi
    :members:
+   :special-members: __init__,
 
 ASI ASE claculator
 -----------------------------
