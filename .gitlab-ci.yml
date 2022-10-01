@@ -9,7 +9,7 @@ build-asi-doc:
   stage: buildlib
   needs: ["build-pyasi"]
   script:
-    - apt install --no-install-recommends -qy doxygen python3-sphinx-automodapi python3-pip python3-venv
+    - apt install --no-install-recommends -qy doxygen python3-sphinx-automodapi python3-sphinx-rtd-theme python3-pip python3-venv
     - cd include && doxygen && cd ..
     - pip install --force-reinstall `ls -tr pyasi/dist/asi4py-0.0.*.whl | tail -n 1`
     - cd docs && make html
