@@ -11,6 +11,8 @@ Atomic Simulation Interface (ASI) is a native C-style API that includes function
    intro
    ASI API reference <https://pvst.gitlab.io/asi/asi_8h.html>
    reference
+   ackn
+   licenses
 
 
 

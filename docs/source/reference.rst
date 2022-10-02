@@ -1,8 +1,8 @@
 asi4py reference
 ==================================================================================================
 
-ASIlib class
---------------------
+Python wrapper for ASI-enabled libraries
+----------------------------------------------
 
 .. automodule:: asi4py.pyasi
    :members:
