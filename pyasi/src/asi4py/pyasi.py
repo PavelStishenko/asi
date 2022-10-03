@@ -125,7 +125,8 @@ class ASIlib:
       self.lib.ASI_n_atoms.restype = c_int
       self.lib.ASI_energy.restype = c_double
       self.lib.ASI_forces.restype = POINTER(c_double)
-      self.lib.ASI_stress.restype = POINTER(c_double)
+      if hasattr(self.lib, "ASI_stress"):
+        self.lib.ASI_stress.restype = POINTER(c_double)
       self.lib.ASI_atomic_charges.restype = POINTER(c_double)
       self.lib.ASI_atomic_charges.argtypes  = [c_int,]
       self.lib.ASI_calc_esp.argtypes = [c_int, ndpointer(dtype=np.float64), ndpointer(dtype=np.float64), ndpointer(dtype=np.float64)]
