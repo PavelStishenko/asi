@@ -12,7 +12,7 @@ from ase import units
 
 ASI_LIB_PATH = os.environ['ASI_LIB_PATH']
 asilib = CDLL(ASI_LIB_PATH, mode=RTLD_GLOBAL)
-sl = ScaLAPACK4py(asilib)
+#sl = ScaLAPACK4py(asilib)
 
 
 if asilib.ASI_flavour() == 1:
@@ -86,8 +86,9 @@ atoms.calc.asi.register_external_potential(esp, atoms)
 parprint(f'E = {atoms.get_potential_energy():.6f} eV')
 #parprint(f'E = {atoms.get_potential_energy()*0.9999999439805366:.6f}') # AIMS units conversion to correspond test_esp.cpp
 parprint(f'E = {atoms.get_potential_energy()/units.Ha:.6f} Ha')
+parprint(f'atomic_charges = {atoms.calc.asi.atomic_charges}')
+f = atoms.get_forces()
 if MPI.COMM_WORLD.rank == 0:
   print('Forces [Ha/Bohr]:')
-  np.savetxt(sys.stdout, atoms.get_forces()/units.Ha*units.Bohr, fmt='%10.6f')
-parprint(f'atomic_charges = {atoms.calc.asi.atomic_charges}')
+  np.savetxt(sys.stdout, f/units.Ha*units.Bohr, fmt='%10.5f')
 
