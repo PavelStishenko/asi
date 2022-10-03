@@ -16,6 +16,10 @@
 
 using namespace std;
 
+const char *asi_log_calls = getenv("ASI_LOG_CALLS");
+
+#define LOG_FUNC if (asi_log_calls) {std::cout << "\033[1;37m" << "ASI_LOG: " << __FUNCTION__ << "\033[0m" << std::endl;}
+
 const double bohr = 0.52917721; // bohrs in 1 Ang.
 const double hartree = 1./27.2113845; // Hartree in 1 eV.
 
@@ -26,6 +30,7 @@ int major, minor, patch;
 std::vector<std::array<double, 3> > atom_coords;
 std::vector<std::array<double, 3> > saved_total_forces;
 std::vector<std::array<double, 3> > saved_atomic_charges;
+double saved_stress_tensor[3*3];
 
 ASI_ext_pot_func_t ext_pot_func = 0;
 void *ext_pot_func_aux_ptr = 0;
@@ -40,6 +45,7 @@ int ASI_flavour()
 
 void ASI_init(const char *inputpath, const char *outputfilename, int mpiComm)
 {
+  LOG_FUNC
   dftbp_api(&major, &minor, &patch);
   if (mpiComm == -1)
   {
@@ -57,26 +63,31 @@ void ASI_init(const char *inputpath, const char *outputfilename, int mpiComm)
 
 int ASI_get_basis_size()
 {
+  LOG_FUNC
   return dftbp_get_basis_size(&calculator);
 }
 
 bool ASI_is_hamiltonian_real()
 {
+  LOG_FUNC
   return dftbp_is_hs_real(&calculator);
 }
 
 void ASI_register_dm_callback(ASI_dmhs_callback_t dm_callback, void *aux_ptr)
 {
+  LOG_FUNC
   dftbp_register_dm_callback(&calculator, dm_callback, aux_ptr);
 }
 
 void ASI_register_overlap_callback(ASI_dmhs_callback_t hs_callback, void *aux_ptr)
 {
+  LOG_FUNC
   dftbp_register_s_callback(&calculator, hs_callback, aux_ptr);
 }
 
 void ASI_register_hamiltonian_callback(ASI_dmhs_callback_t hs_callback, void *aux_ptr)
 {
+  LOG_FUNC
   dftbp_register_h_callback(&calculator, hs_callback, aux_ptr);
 }
 
@@ -85,6 +96,7 @@ void ASI_register_hamiltonian_callback(ASI_dmhs_callback_t hs_callback, void *au
 */
 void ASI_set_atom_coords(const double *coords, int /*n_atoms unused*/)
 {
+  LOG_FUNC
   const int n = ASI_n_atoms();
   atom_coords.resize(n);
  
@@ -103,6 +115,7 @@ void ASI_set_atom_coords(const double *coords, int /*n_atoms unused*/)
 */
 void ASI_set_geometry(const double *coords, int n_atoms, const double *lattice)
 {
+  LOG_FUNC
   const int n = ASI_n_atoms();
   assert(n == n_atoms);
   
@@ -122,6 +135,7 @@ void ASI_set_geometry(const double *coords, int n_atoms, const double *lattice)
 
 void ASI_set_external_potential(ASI_ext_pot_func_t ext_pot_func, void * ext_pot_func_aux_ptr)
 {
+  LOG_FUNC
   const int n = ASI_n_atoms();
   assert(atom_coords.size() == n);
   std::vector<double> extpot(n);
@@ -142,6 +156,7 @@ void ASI_set_external_potential(ASI_ext_pot_func_t ext_pot_func, void * ext_pot_
 
 void ASI_register_external_potential(ASI_ext_pot_func_t _ext_pot_func, void * _ext_pot_func_aux_ptr)
 {
+  LOG_FUNC
   ext_pot_func = _ext_pot_func;
   ext_pot_func_aux_ptr = _ext_pot_func_aux_ptr;
   
@@ -150,6 +165,7 @@ void ASI_register_external_potential(ASI_ext_pot_func_t _ext_pot_func, void * _e
 
 void ASI_run()
 {
+  LOG_FUNC
   assert(ASI_initialized && "ASI not initialized");
 
   double mermin_energy;
@@ -158,6 +174,7 @@ void ASI_run()
 
 double ASI_energy()
 {
+  LOG_FUNC
   double mermin_energy;
   dftbp_get_energy(&calculator, &mermin_energy);
   return mermin_energy;
@@ -165,40 +182,37 @@ double ASI_energy()
 
 int ASI_n_atoms()
 {
+  LOG_FUNC
   return dftbp_get_nr_atoms(&calculator);
 }
 
 int ASI_get_nspin()
 {
+  LOG_FUNC
   return dftbp_get_nr_spin(&calculator);
 }
 
 int ASI_get_nkpts()
 {
+  LOG_FUNC
   return dftbp_nr_kpoints(&calculator);
 }
 
 int ASI_get_n_local_ks()
 {
+  LOG_FUNC
   return dftbp_get_nr_local_ks(&calculator);
 }
 
 int ASI_get_local_ks(int *local_ks)
 {
+  LOG_FUNC
   return dftbp_get_local_ks(&calculator, local_ks);
 }
 
-void ASI_get_dm(int i_spin, int i_kpnt, int **dm_desc, double **dm)
-{
-}
-
-void ASI_set_dm(int **dm_descs, double **dms, int n_kpts) //  TODO: get rid of n_kpts here
-{
-}
-
-
 const double * ASI_forces()
 {
+  LOG_FUNC
   saved_total_forces.resize(ASI_n_atoms());
   dftbp_get_gradients(&calculator, saved_total_forces[0].data());
   for (size_t i = 0; i < saved_total_forces.size(); ++i)
@@ -210,8 +224,16 @@ const double * ASI_forces()
   return saved_total_forces[0].data();
 }
 
+const double * ASI_stress()
+{
+  LOG_FUNC
+  dftbp_get_stress_tensor(&calculator, saved_stress_tensor);
+  return saved_stress_tensor;
+}
+
 const double* ASI_atomic_charges(int scheme)
 {
+  LOG_FUNC
   saved_atomic_charges.resize(ASI_n_atoms());
   dftbp_get_gross_charges(&calculator, saved_atomic_charges[0].data());
   return saved_atomic_charges[0].data();
@@ -219,6 +241,7 @@ const double* ASI_atomic_charges(int scheme)
 
 void ASI_calc_esp(int n, const double *coords, double *potential, double *potential_grad)
 {
+  LOG_FUNC
   std::vector<double> potential_buf; // empty for a while
   
   if (not potential)
@@ -257,13 +280,9 @@ void ASI_calc_esp(int n, const double *coords, double *potential, double *potent
   }
 }
 
-void ASI_get_esp(int *n, double **coords, double **potential, double **potential_grad)
-{
-  *n = 0;
-}
-
 void ASI_finalize()
 {
+  LOG_FUNC
   dftbp_final(&calculator);
 }
 

@@ -17,7 +17,7 @@ class ASI_ASE_calculator(Calculator):
   '''
     ASI ASI calc
   '''
-  implemented_properties = ['energy', 'free_energy', 'forces', 'charges']
+  implemented_properties = ['energy', 'free_energy', 'forces', 'charges', 'stress']
   supported_changes = {}
 
   def __init__(self, lib_file_name, init_func, mpi_comm, atoms, work_dir='asi.temp', logfile='asi.log'):
@@ -43,15 +43,24 @@ class ASI_ASE_calculator(Calculator):
           raise PropertyNotImplementedError(
               'Cannot change {} through ASI API.  '
               .format(bad if len(bad) > 1 else bad[0]))
+      
+      #print("calculate:", properties)
 
       self.atoms = atoms.copy()
       self.asi.atoms = atoms
-      self.asi.set_coords()
+      self.asi.set_geometry()
       results = {}
       self.asi.run()
       results['free_energy'] = results['energy'] = self.asi.total_energy * hartree
-      if self.asi.total_forces is not None:
-        results['forces'] = self.asi.total_forces * (hartree / bohr)
+      
+      if 'forces' in properties:
+        if self.asi.total_forces is not None:
+          results['forces'] = self.asi.total_forces * (hartree / bohr)
+
+      if 'stress' in properties:
+        if self.asi.stress is not None:
+          results['stress'] = self.asi.stress
+
       # Charges computation breaks total_energy on subsequent SCF calculations in AIMS:  results['charges'] = self.asi.atomic_charges
 
       self.results.update(results)

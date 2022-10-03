@@ -125,6 +125,7 @@ class ASIlib:
       self.lib.ASI_n_atoms.restype = c_int
       self.lib.ASI_energy.restype = c_double
       self.lib.ASI_forces.restype = POINTER(c_double)
+      self.lib.ASI_stress.restype = POINTER(c_double)
       self.lib.ASI_atomic_charges.restype = POINTER(c_double)
       self.lib.ASI_atomic_charges.argtypes  = [c_int,]
       self.lib.ASI_calc_esp.argtypes = [c_int, ndpointer(dtype=np.float64), ndpointer(dtype=np.float64), ndpointer(dtype=np.float64)]
@@ -146,7 +147,7 @@ class ASIlib:
       input_filename = {1:"dummy", 2:"dftb_in.hsd"}[self.lib.ASI_flavour()]
       self.lib.ASI_init(input_filename.encode('UTF-8'), self.logfile.encode('UTF-8'), c_int(self.mpi_comm.py2f()))
       if (self.lib.ASI_flavour() == 2):
-        self.set_coords() # FIXME
+        self.set_geometry() # DFTB+ ignores geometry from input files if used via API
       return self
     finally:
       os.chdir(curdir)
@@ -176,6 +177,8 @@ class ASIlib:
     try:
       os.chdir(self.work_dir)
       self.lib.ASI_run()
+    except Exception as err:
+      print(f"Exception, {err}")
     finally:
       os.chdir(curdir)
 
@@ -387,6 +390,19 @@ class ASIlib:
       return None
 
   @property
+  def stress(self):
+    """
+      c_double[3, 3 ]: Stress tensor of the periodic system
+      
+      Calls `ASI_stress()`
+    """
+    stress_ptr = self.lib.ASI_stress()
+    if stress_ptr:
+      return np.ctypeslib.as_array(stress_ptr, shape=(3, 3))
+    else:
+      return None
+
+  @property
   def atomic_charges(self):
     """
       c_double[n_atoms]: Atomic charges. Default partitioning scheme is implementation-dependent
@@ -408,11 +424,13 @@ class ASIlib:
     """
     return self.lib.ASI_energy()
   
-  def set_coords(self, coords=None):
-    if coords is not None:
-      assert False
-      self.atoms.positions[:] = coords
-    self.lib.ASI_set_atom_coords((self.atoms.positions / units.Bohr).ctypes.data_as(c_void_p), len(self.atoms))
+  def set_geometry(self):
+    coords_ptr = (self.atoms.positions / units.Bohr).ctypes.data_as(c_void_p)
+    if any(self.atoms.pbc):
+      lattice_ptr = (self.atoms.cell.ravel() / units.Bohr).ctypes.data_as(c_void_p)
+      self.lib.ASI_set_geometry(coords_ptr, len(self.atoms), lattice_ptr)
+    else:
+      self.lib.ASI_set_atom_coords(coords_ptr, len(self.atoms))
 
   @property
   def keep_density_matrix(self):

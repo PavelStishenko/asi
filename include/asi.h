@@ -134,6 +134,16 @@ extern "C" double ASI_energy();
 extern "C" const double* ASI_forces();
 
 /*!
+  Returns stress tensor
+  
+  Returns stress tensor. May return `NULL` for non-periodic system or if stress calculation was not 
+  configured on ASI_init() call.
+  
+  \return pointer to array in row major format of shape `[3, 3]` or `NULL`.
+*/
+extern "C" const double* ASI_stress();
+
+/*!
   Return atomic charges
   
   Return atomic charges calculated by requested algorithm (charge partitioning scheme). 
