@@ -13,12 +13,10 @@ Hamiltonian = DFTB{
       Si = "p" 
    } 
    SCC = Yes 
-   SlaterKosterFiles = Type2FileNames{ 
-      Prefix = /home/mazay/prg/slakos/origin/mio-1-1//../pbc-0-3/ 
-      Separator = "-" 
-      Suffix = ".skf" 
-      } 
-   } 
+   SlaterKosterFiles = {
+      Si-Si = "./Si-Si.skf"
+   }
+} 
 Options { 
    WriteResultsTag = Yes 
 } 
