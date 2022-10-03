@@ -40,7 +40,7 @@ def make_aims_calc(iPI=False):
     sc_accuracy_rho=1e-05,
     sc_accuracy_etot=1e-06,
 
-    sc_accuracy_forces=1e-1, # just to enable force calculation
+    sc_accuracy_forces=1e-2, # just to enable force calculation
     species_dir=os.environ["AIMS_SPECIES_DIR"],
     tier = [1, 2],
     #density_update_method="density_matrix"
@@ -75,7 +75,7 @@ def dyn_step(asi):
   #atoms.calc.asi.register_DM_init(dm_init, atoms.calc.asi) # reset dm_init callback
   atoms.calc.asi.init_density_matrix = {(1,1):predict_dm(atoms)}
   fmax = max(np.linalg.norm(atoms.get_forces(), axis=-1))
-  parprint(f'E = {atoms.get_potential_energy():.6f} fmax = {fmax:.6f}' )
+  parprint(f'E = {atoms.get_potential_energy():.6f} fmax = {fmax:.4f}' )
 
 
 atoms = read(sys.argv[1])
@@ -93,7 +93,7 @@ else:
   atoms.calc = make_aims_calc()
 
 parprint(f'E = {atoms.get_potential_energy():.6f}')
-with np.printoptions(formatter={"float_kind":lambda x: f"{(0.0 if abs(x) < 1e-6 else x):.6f}"}):
+with np.printoptions(formatter={"float_kind":lambda x: f"{(0.0 if abs(x) < 1e-6 else x):.4f}"}):
   parprint(atoms.get_forces())
 
 dyn = LBFGS(atoms, logfile='asi.temp/dyn.log')
