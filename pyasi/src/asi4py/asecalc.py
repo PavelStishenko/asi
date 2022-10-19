@@ -20,12 +20,19 @@ class ASI_ASE_calculator(Calculator):
   implemented_properties = ['energy', 'free_energy', 'forces', 'charges', 'stress']
   supported_changes = {}
 
-  def __init__(self, lib_file_name, init_func, mpi_comm, atoms, work_dir='asi.temp', logfile='asi.log'):
-    Calculator.__init__(self)
-    self.atoms = atoms.copy()
-    self.asi = ASIlib(lib_file_name, init_func, mpi_comm, atoms, work_dir, logfile)
-    self.asi.init()
-    self.DM_init_callback = None
+  def __init__(self, asi_lib, init_func=None, mpi_comm=None, atoms=None, work_dir='asi.temp', logfile='asi.log'):
+    try:
+      Calculator.__init__(self)
+      self.atoms = atoms.copy()
+      if isinstance(asi_lib, ASIlib):
+        self.asi = asi_lib
+      else:
+        self.asi = ASIlib(asi_lib, init_func, mpi_comm, atoms, work_dir, logfile)
+        self.asi.init()
+      self.DM_init_callback = None
+    except Exception  as err:
+      print ("Error in init",err)
+      raise err
 
   def todict(self):
       d = {'type': 'calculator',
