@@ -6,16 +6,14 @@ Introduction
 ASI API specification
 =======================
 
-ASI API is specified as a C header file [`asi.h`][1]. Codes implementing ASI API must provide linkable library with definitions of functions from [`asi.h`][1]. Depending on particular usage of the implementaions, some functions can be ommited or implemented as stubs, if they are not going to used. To use Python ASI wrapper it is necessary to have all functions from `asi.h` defined, but of course stub definitions can be used.
+ASI API is specified as a C header file `asi.h`_. Codes implementing ASI API must provide linkable library with definitions of functions from `asi.h`_. Depending on particular usage of the implementaions, some functions can be ommited or implemented as stubs, if they are not going to used. To use Python ASI wrapper it is necessary to have all functions from `asi.h` defined, but of course stub definitions can be used.
 
-[**ASI API specification**][1].
-
-[1]: https://pvst.gitlab.io/asi/asi_8h.html
+.. _`asi.h`: https://pvst.gitlab.io/asi/asi_8h.html
 
 Implementations
 =====================
 
-* `DFTB+](https://dftbplus.org/): [in separate branch <https://github.com/PavelStishenko/dftbplus/tree/api-dm-3>`_: `in separate branch <https://github.com/PavelStishenko/dftbplus/tree/api-dm-3>`_. Milestone release: `22.2`.
+* `DFTB+ <https://dftbplus.org/>`_: in the separate branch `api-H-import <https://github.com/PavelStishenko/dftbplus/tree/api-H-import>`_: `in separate branch <https://github.com/PavelStishenko/dftbplus/tree/api-dm-3>`_. Milestone release: `23.1`.
 
 * `FHI-aims <https://fhi-aims.org/>`_: in the main branch.
 
@@ -53,7 +51,7 @@ To install asi4py use `pip`
 pip install asi4py
 ```
 
-or install from git sources <https://gitlab.com/pvst/asi/-/tree/master/pyasi>_
+or install from `git sources <https://gitlab.com/pvst/asi/-/tree/master/pyasi>`_
 
 
 Testing
