@@ -13,7 +13,7 @@ ASI API is specified as a C header file `asi.h`_. Codes implementing ASI API mus
 Implementations
 =====================
 
-* `DFTB+ <https://dftbplus.org/>`_: in the separate branch `api-H-import <https://github.com/PavelStishenko/dftbplus/tree/api-H-import>`_: `in separate branch <https://github.com/PavelStishenko/dftbplus/tree/api-dm-3>`_. Milestone release: `23.1`.
+* `DFTB+ <https://dftbplus.org/>`_: in the separate branch `api-H-import <https://github.com/PavelStishenko/dftbplus/tree/api-H-import>`_. Milestone release: `23.1`.
 
 * `FHI-aims <https://fhi-aims.org/>`_: in the main branch.
 
@@ -30,11 +30,11 @@ FHI-aims has embedded support of ASI API. Just build latest version of FHI-aims 
 DFTB+
 -----------
 
-1. Download and build DFTB+ from `the branch with ASI API <https://github.com/PavelStishenko/dftbplus/tree/api-dm-3>`_ with shared library support.
+1. Download and build DFTB+ from `the branch with ASI API <https://github.com/PavelStishenko/dftbplus/tree/api-H-import>`_ with shared library support.
 
-2. Set environment variables `DFTBP*INCLUDE` and `DFTBP*LIB_DIR` to folders with DFTB+ C-headers and libraries.
+2. Set environment variables `DFTBP_INCLUDE` and `DFTBP_LIB_DIR` to folders with DFTB+ C-headers and libraries.
 
-3. Optionally export environment variables `INSTALL*PREFIX` and `BUILD*PATH` to set installation and building locations.
+3. Optionally export environment variables `INSTALL_PREFIX` and `BUILD_PATH` to set installation and building locations.
 
 4. Run `make && make install` from the root of the working copy of this repository. 
 
