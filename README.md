@@ -17,7 +17,7 @@ ASI API is specified as a C header file [`asi.h`][1]. Codes implementing ASI API
 
 ## Supported in:
 
-* [DFTB+](https://dftbplus.org/): [in separate branch](https://github.com/PavelStishenko/dftbplus/tree/api-dm-3). Milestone release: `22.2`.
+* [DFTB+](https://dftbplus.org/): [in separate branch](https://github.com/PavelStishenko/dftbplus/tree/api-H-import). Milestone release: `23.1`.
 * [FHI-aims](https://fhi-aims.org/): in the main branch.
 
 
@@ -30,7 +30,7 @@ FHI-aims has embedded support of ASI API. Just build latest version of FHI-aims 
 
 ### DFTB+
 
-1. Download and build DFTB+ from [the branch with ASI API](https://github.com/PavelStishenko/dftbplus/tree/api-dm-3) with shared library support.
+1. Download and build DFTB+ from [the branch with ASI API](https://github.com/PavelStishenko/dftbplus/tree/api-H-import) with shared library support.
 
 2. Set environment variables `DFTBP_INCLUDE` and `DFTBP_LIB_DIR` to folders with DFTB+ C-headers and libraries.
 
